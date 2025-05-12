@@ -3,18 +3,14 @@
         "allowJs": false,
         "allowSyntheticDefaultImports": true,
         "baseUrl": "./",
+        "declaration": true,
         "esModuleInterop": true,
         "module": "NodeNext",
         "moduleResolution": "nodenext",
-        "strictNullChecks": true,
         "outDir": "./dist",
         "rootDir": "./toolkit",
-        "declaration": true
+        "strictNullChecks": true
     },
-    "include": [
-        "./toolkit/**/*.ts"
-    ],
-    "exclude": [
-        "**/ts/*.ts"
-    ]
+    "include": ["./toolkit/**/*.ts"],
+    "exclude": ["**/ts/*.ts"]
 }
