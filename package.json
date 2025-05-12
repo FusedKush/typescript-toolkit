@@ -11,7 +11,9 @@
   "type": "module",
   "main": "./dist/index.js",
   "exports": {
-    ".": "./dist/index.js"
+    ".": "./dist/index.js",
+    "./examples": "./dist/examples/index.js",
+    "./examples/exampleTool": "./dist/examples/exampleTool/index.js"
   },
   "scripts": {
     "install": "node ./install.js"
