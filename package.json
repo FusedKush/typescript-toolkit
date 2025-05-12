@@ -1,0 +1,42 @@
+{
+  "name": "typescript-toolkit",
+  "version": "0.0.1",
+  "description": "A collection of various TypeScript tools, tricks, and utilities that can be used in a wide range of projects and programs.",
+  "files": [
+    "/tsconfig.json",
+    "/install.js",
+    "/toolkit/**/*.ts",
+    "!/toolkit/**/ts/**/*.ts"
+  ],
+  "type": "module",
+  "main": "./dist/index.js",
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "scripts": {
+    "install": "node ./install.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FusedKush/typescript-toolkit.git"
+  },
+  "keywords": [
+    "TypeScript",
+    "JavaScript",
+    "Toolbox",
+    "Toolkit",
+    "Utilities",
+    "Tools",
+    "Kit"
+  ],
+  "author": "Zach Vaughan (FusedKush)",
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/FusedKush/typescript-toolkit/issues"
+  },
+  "homepage": "https://github.com/FusedKush/typescript-toolkit#readme",
+  "devDependencies": {
+    "@types/node": "^22.15.17",
+    "typescript": "^5.8.3"
+  }
+}
