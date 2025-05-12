@@ -8,7 +8,7 @@
  */
 
 import { spawn } from "node:child_process";
-import { rmSync, rmdirSync } from "node:fs";
+import { rmSync } from "node:fs";
 
 
 /**
@@ -51,8 +51,8 @@ childProc.on('exit', (code) => {
     if (code == 0) {
         // Remove the Source Code & Installation Files once we're done.
         try {
-            // rmSync('./install.js');
-            // rmdirSync('./toolkit');
+            rmSync('./install.js');
+            rmSync('./toolkit', { recursive: true });
         }
         catch (error) {
             console.warn(
