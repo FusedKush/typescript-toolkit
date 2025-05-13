@@ -30,5 +30,5 @@ type Test = types.IsAny<any>;
 
 ## Changelog
 - [`1.0.0`](https://github.com/FusedKush/typescript-toolkit/releases/1.0.0):
-  - Added [`isAny`](./isAny/)
   - Added `types`
+  - Added [`isAny`](./isAny/)
