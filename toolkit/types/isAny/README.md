@@ -11,7 +11,7 @@ type Test = IsAny<42>;       // false
 
 ## Information
 - **Author**: [Zach Vaughan (FusedKush)](https://github.com/FusedKush)
-- **Original Source**: [_Stack Overflow_](https://stackoverflow.com/questions/70545982/why-am-i-getting-type-instantiation-is-excessively-deep-and-possibly-infinite#answer-74891993)
+- **Original Source**: [_Stack Overflow_](https://stackoverflow.com/questions/55541275/typescript-check-for-the-any-type#answer-77451367)
 - **Depends On**: _None_
 - **Dependents**: _None_
 
@@ -37,7 +37,7 @@ import * as types from "typescript-toolkit/types";
 type Test = types.IsAny<any>;
 ```
 
-For JavaScript projects, you can use a [`import()` types](https://www.typescriptlang.org/docs/handbook/modules/reference.html#import-types) or the [`@import` tag](https://www.typescriptlang.org/docs/handbook/jsdoc-supported-types.html#import) to import the type:
+For JavaScript projects, you can use [`import()` types](https://www.typescriptlang.org/docs/handbook/modules/reference.html#import-types) or the [`@import` tag](https://www.typescriptlang.org/docs/handbook/jsdoc-supported-types.html#import) to import the type:
 ```js
 /**
  * @typedef {import("typescript-toolkit/types").IsAny<any>} Test

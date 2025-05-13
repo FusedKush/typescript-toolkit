@@ -30,7 +30,7 @@ type Test = types.IsAny<any>;
 type Test = types.UnionToIntersection<{ foo: string; } | { bar: number; }>;
 ```
 
-For JavaScript projects, you can use a [`import()` types](https://www.typescriptlang.org/docs/handbook/modules/reference.html#import-types) or the [`@import` tag](https://www.typescriptlang.org/docs/handbook/jsdoc-supported-types.html#import) to import the namespace or individual types:
+For JavaScript projects, you can use [`import()` types](https://www.typescriptlang.org/docs/handbook/modules/reference.html#import-types) or the [`@import` tag](https://www.typescriptlang.org/docs/handbook/jsdoc-supported-types.html#import) to import the namespace or individual types:
 ```js
 /**
  * @typedef {import("typescript-toolkit/types").IsAny<any>} Test

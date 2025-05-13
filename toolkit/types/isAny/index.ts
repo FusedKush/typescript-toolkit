@@ -8,7 +8,7 @@
  * type Test = IsAny<42>;       // false
  * 
  * @author Zach Vaughan (FusedKush)
- * @author [via _Stack Overflow_](https://stackoverflow.com/questions/70545982/why-am-i-getting-type-instantiation-is-excessively-deep-and-possibly-infinite#answer-74891993)
+ * @author [via _Stack Overflow_](https://stackoverflow.com/questions/55541275/typescript-check-for-the-any-type#answer-77451367)
  * @since 1.0.0
  */
 declare module "./index.js";
