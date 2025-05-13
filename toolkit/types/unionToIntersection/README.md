@@ -28,8 +28,7 @@ import UnionToIntersection from "typescript-toolkit/types/unionToIntersection";
 import * as UnionToIntersection from "typescript-toolkit/types/unionToIntersection";
 import { UnionToIntersection } from "typescript-toolkit/types";
 
-type Test = UnionToIntersection<{ foo: string } | { bar: number }>;
-// { foo: string; bar: number; }
+type Test = UnionToIntersection<{ foo: string; } | { bar: number; }>;
 ```
 
 You can also import the enclosing namespace into your project:
@@ -39,8 +38,14 @@ import { types } from "typescript-toolkit";
 import types from "typescript-toolkit/types";
 import * as types from "typescript-toolkit/types";
 
-type Test = UnionToIntersection<{ foo: string } | { bar: number }>;
-// { foo: string; bar: number; }
+type Test = UnionToIntersection<{ foo: string; } | { bar: number; }>;
+```
+
+For JavaScript projects, you can use a [Dynamic Import Expression](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-4.html#dynamic-import-expressions) to import the type:
+```js
+/**
+ * @typedef {import("typescript-toolkit/types").UnionToIntersection<{ foo: string; } | { bar: number; }>} Test
+ */
 ```
 
 
