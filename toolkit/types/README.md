@@ -2,6 +2,10 @@
 General-Purpose TypeScript Helper Types.
 
 
+## Tool List
+- [`isAny`](./isAny/)
+
+
 ## NPM Package Usage
 You can directly import tools into your project:
 ```ts
@@ -25,4 +29,6 @@ type Test = types.IsAny<any>;
 
 
 ## Changelog
-- [`1.0.0`](https://github.com/FusedKush/typescript-toolkit/releases/1.0.0): Added
+- [`1.0.0`](https://github.com/FusedKush/typescript-toolkit/releases/1.0.0):
+  - Added `types`
+  - Added [`isAny`](./isAny/)

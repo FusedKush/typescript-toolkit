@@ -5,4 +5,5 @@
  */
 declare module "./index.js";
 
+export * from "./isAny/index.js";
 export * as default from "./index.js";
