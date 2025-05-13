@@ -41,10 +41,31 @@ import * as types from "typescript-toolkit/types";
 type Test = UnionToIntersection<{ foo: string; } | { bar: number; }>;
 ```
 
-For JavaScript projects, you can use a [Dynamic Import Expression](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-4.html#dynamic-import-expressions) to import the type:
+For JavaScript projects, you can use a [`import()` types](https://www.typescriptlang.org/docs/handbook/modules/reference.html#import-types) or the [`@import` tag](https://www.typescriptlang.org/docs/handbook/jsdoc-supported-types.html#import) to import the type:
 ```js
 /**
  * @typedef {import("typescript-toolkit/types").UnionToIntersection<{ foo: string; } | { bar: number; }>} Test
+ */
+/**
+ * @typedef {import("typescript-toolkit").types.UnionToIntersection<{ foo: string; } | { bar: number; }>} Test
+ */
+
+/**
+ * @import UnionToIntersection from "typescript-toolkit/types/unionToIntersection"
+ */
+/**
+ * @import {UnionToIntersection} from "typescript-toolkit/types"
+ */
+/**
+ * @typedef {UnionToIntersection<{ foo: string; } | { bar: number; }>} Test
+ */
+
+/**
+ * @import {types} from "typescript-toolkit"
+ * @import types from "typescript-toolkit/types"
+ */
+/**
+ * @typedef {types.UnionToIntersection<{ foo: string; } | { bar: number; }>} Test
  */
 ```
 
