@@ -37,6 +37,13 @@ import * as types from "typescript-toolkit/types";
 type Test = types.IsAny<any>;
 ```
 
+For JavaScript projects, you can use a [Dynamic Import Expression](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-4.html#dynamic-import-expressions) to import the type:
+```js
+/**
+ * @typedef {import("typescript-toolkit/types").IsAny<any>} Test
+ */
+```
+
 
 ## Changelog
 - [`1.0.0`](https://github.com/FusedKush/typescript-toolkit/releases/1.0.0): Added
