@@ -15,7 +15,8 @@
     "./examples": "./dist/examples/index.js",
     "./examples/exampleTool": "./dist/examples/exampleTool/index.js",
     "./types": "./dist/types/index.js",
-    "./types/isAny": "./dist/types/isAny/index.js"
+    "./types/isAny": "./dist/types/isAny/index.js",
+    "./types/unionToIntersection": "./dist/types/unionToIntersection/index.js"
   },
   "scripts": {
     "install": "node ./install.js"

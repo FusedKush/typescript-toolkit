@@ -4,6 +4,7 @@ General-Purpose TypeScript Helper Types.
 
 ## Tool List
 - [`isAny`](./isAny/)
+- [`unionToIntersection`](./unionToIntersection/)
 
 
 ## NPM Package Usage
@@ -32,3 +33,4 @@ type Test = types.IsAny<any>;
 - [`1.0.0`](https://github.com/FusedKush/typescript-toolkit/releases/1.0.0):
   - Added `types`
   - Added [`isAny`](./isAny/)
+  - Added [`unionToIntersection`](./unionToIntersection/)
