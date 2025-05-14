@@ -2,12 +2,7 @@
   "name": "typescript-toolkit",
   "version": "1.0.0",
   "description": "A collection of various TypeScript tools, tricks, and utilities that can be used in a wide range of projects and programs.",
-  "files": [
-    "/tsconfig.json",
-    "/install.js",
-    "/toolkit/**/*.ts",
-    "!/toolkit/**/ts/**/*.ts"
-  ],
+  "files": ["/dist/"],
   "type": "module",
   "main": "./dist/index.js",
   "exports": {
@@ -19,7 +14,9 @@
     "./types/unionToIntersection": "./dist/types/unionToIntersection/index.js"
   },
   "scripts": {
-    "install": "node ./install.js"
+    "prepare": "tsc",
+    "build": "tsc",
+    "watch": "tsc --watch"
   },
   "repository": {
     "type": "git",
