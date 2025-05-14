@@ -1,0 +1,6 @@
+/**
+ * Description of the tool goes here...
+ * 
+ * @author [via the _TypeScript Toolkit_](https://github.com/FusedKush/typescript-toolkit/tree/toolkit/NAMESPACE/TOOL_NAME)
+ */
+// JavaScript tool definition and code goes here...
