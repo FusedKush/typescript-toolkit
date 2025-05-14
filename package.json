@@ -2,7 +2,11 @@
   "name": "typescript-toolkit",
   "version": "1.0.0",
   "description": "A collection of various TypeScript tools, tricks, and utilities that can be used in a wide range of projects and programs.",
-  "files": ["/dist/"],
+  "files": [
+    "dist/",
+    "CONTRIBUTING.md",
+    "SECURITY.md"
+  ],
   "type": "module",
   "main": "./dist/index.js",
   "exports": {
