@@ -8,8 +8,7 @@ body:
       label: Did you check if the issue you discovered has been reported already?
       description: "[Existing Issues](https://github.com/FusedKush/typescript-toolkit/issues?q=is%3Aissue%20label%3Abug)"
       options:
-        - label: Yes
-          description: I already checked for existing issues and did not find any matching the problem I'm encountering.
+        - label: Yes, I already checked for existing issues and did not find any matching the problem I'm encountering.
           required: true
     validations:
       required: true
@@ -19,8 +18,8 @@ body:
       label: Search Terms
       description: "Please list all of the search terms you used when looking through the [Existing Issues](https://github.com/FusedKush/typescript-toolkit/issues?q=is%3Aissue%20label%3Abug). This will help others with the same problem find your issue easier."
       placeholder: IsAny, IsAny wrong type, IsAny not working, etc...
-      validations:
-        required: true
+    validations:
+      required: true
   - type: checkboxes
     id: tools
     attributes:
@@ -58,11 +57,11 @@ body:
         - Any special files or configuration required for the issue to appear
         - Instructions to reproduce the issue
       placeholder: I was doing ... using ... with the intention of ... and then ... happened. 
-      validations:
-        required: true
+    validations:
+      required: true
   - type: markdown
     attributes:
-      value: ## Thank you!
+      value: "## Thank you!"
   - type: markdown
     attributes:
       value: Thank you for taking the time to submit this issue! If you think you might be able to fix the issue yourself, considering [contributing](../CONTRIBUTING.md)!.
