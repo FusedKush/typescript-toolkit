@@ -1,0 +1,68 @@
+name: Toolkit Tool Issue Report
+description: Report an Issue with a Tool in the TypeScript Toolkit.
+labels: ["bug", "toolkit tool"]
+body:
+  - type: checkboxes
+    id: affirmation
+    attributes:
+      label: Did you check if the issue you discovered has been reported already?
+      description: [Existing Issues](https://github.com/FusedKush/typescript-toolkit/issues?q=is%3Aissue%20label%3Abug)
+      options:
+        - label: Yes
+          description: I already checked for existing issues and did not find any matching the problem I'm encountering.
+          required: true
+    validations:
+      required: true
+  - type: textarea
+    id: searchTerms
+    attributes:
+      label: Search Terms
+      description: Please list all of the search terms you used when looking through the [Existing Issues](https://github.com/FusedKush/typescript-toolkit/issues?q=is%3Aissue%20label%3Abug). This will help others with the same problem find your issue easier.
+      placeholder: IsAny, IsAny wrong type, IsAny not working, etc...
+      validations:
+        required: true
+  - type: checkboxes
+    id: tools
+    attributes:
+      label: Affected Tools
+      description: Select all of the Tools in the TypeScript Toolkit that this issue applies to.
+      options:
+        - label: `types/isAny`
+        - label: `types/unionToIntersection`
+    validations:
+      required: true
+  - type: dropdown
+    id: type
+    attributes:
+      label: Issue Type
+      description: What type of issue are you encountering?
+      options:
+        - Incorrect/Missing Documentation
+        - Incorrect/Unexpected Behavior or Value
+        - Undocumented Exception or Promise Rejection
+        - Unsupported Function/Type Parameter Arguments
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Description of Issue
+      description: |
+        Please describe the bug, issue, or problem you have been experiencing.
+      
+        Please include as much information as possible in your report to help with understanding and resolving the issue, including:
+        - The type of the issue
+        - How the issue affects client code
+        - The affected source file(s), branch(es), and/or tag(s)
+        - Any special files or configuration required for the issue to appear
+        - Instructions to reproduce the issue
+      placeholder: I was doing ... using ... with the intention of ... and then ... happened. 
+      validations:
+        required: true
+  - type: markdown
+    attributes:
+      value: ## Thank you!
+  - type: markdown
+    attributes:
+      value: Thank you for taking the time to submit this issue! If you think you might be able to fix the issue yourself, considering [contributing](../CONTRIBUTING.md)!.
