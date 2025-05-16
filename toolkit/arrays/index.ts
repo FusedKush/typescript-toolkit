@@ -6,4 +6,5 @@
  */
 declare module "./index.js";
 
+export * from "./arrayify/index.js";
 export * as default from "./index.js";

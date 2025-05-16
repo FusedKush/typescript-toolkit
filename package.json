@@ -14,6 +14,7 @@
     "./examples": "./dist/examples/index.js",
     "./examples/exampleTool": "./dist/examples/exampleTool/index.js",
     "./arrays": "./dist/arrays/index.js",
+    "./arrays/arrayify": "./dist/arrays/arrayify/index.js",
     "./types": "./dist/types/index.js",
     "./types/baseTypes": "./dist/types/baseTypes/index.js",
     "./types/isAny": "./dist/types/isAny/index.js",
