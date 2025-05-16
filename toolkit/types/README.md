@@ -3,9 +3,9 @@ General-Purpose TypeScript Helper Types.
 
 
 ## Tool List
-- [`baseTypes`](baseTypes)
-- [`isAny`](isAny)
-- [`unionToIntersection`](unionToIntersection)
+- [`baseTypes`](baseTypes): Types representing the _Base Types_ from which all types are derived.
+- [`isAny`](isAny): Determine if the given type is `any`.
+- [`unionToIntersection`](unionToIntersection): Transform the specified [union](https://www.typescriptlang.org/docs/handbook/2/everyday-types.html#union-types) into an [intersection](https://www.typescriptlang.org/docs/handbook/2/objects.html#intersection-types).
 
 
 ## NPM Package Usage
