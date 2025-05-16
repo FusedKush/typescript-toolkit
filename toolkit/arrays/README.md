@@ -4,20 +4,22 @@ Utility tools for working with [Dynamic-Length Arrays](https://developer.mozilla
 
 ## Tool List
 - [`arrayify`](arrayify): Convert the specified type or value into an array, if it is not one already.
+- [`toListString`](toListString): Convert the specified array to a `string` containing a list of the elements in the array.
 
 
 ## NPM Package Usage
 You can directly import tools into your project:
 ```ts
 // These imports are all equivalent
-import arrayify from "typescript-toolkit/arrays/arrayify";
-import * as ns from "typescript-toolkit/arrays/arrayify";
+import toListString from "typescript-toolkit/arrays/toListString";
+import * as arrayifyNs from "typescript-toolkit/arrays/arrayify";
 import { ArrayifyType, arrayify } from "typescript-toolkit/arrays";
 
-type ArrayifiedFoo = ns.ArrayifyType<string>;
+type ArrayifiedFoo = arrayifyNs.ArrayifyType<string>;
 type ArrayifiedBar = ArrayifyType<number[]>;
-var arrayifiedFoo = ns.arrayify(42);
+var arrayifiedFoo = arrayifyNs.arrayify(42);
 var arrayifiedBar = arrayify(["Hello", "World!"]);
+const listStr = toListString(["foo", "bar", "baz"]);
 ```
 
 You can also import the namespace into your project:
@@ -31,47 +33,38 @@ type ArrayifiedFoo = arrays.ArrayifyType<string>;
 type ArrayifiedBar = arrays.ArrayifyType<number[]>;
 var arrayifiedFoo = arrays.arrayify(42);
 var arrayifiedBar = arrays.arrayify(["Hello", "World!"]);
+const listStr = arrays.toListString(["foo", "bar", "baz"]);
 ```
 
 For JavaScript projects, you can use [`import()` types](https://www.typescriptlang.org/docs/handbook/modules/reference.html#import-types) or the [`@import` tag](https://www.typescriptlang.org/docs/handbook/jsdoc-supported-types.html#import) to import the namespace or individual types:
 ```js
 /**
- * @typedef {import("typescript-toolkit/types").IsAny<any>} IsAnyType
+ * @typedef {import("typescript-toolkit/arrays").ArrayifyType<string>} ArrayifiedFoo
  */
 /**
- * @typedef {import("typescript-toolkit").types.UnionToIntersection<{ foo: string; } | { bar: number; }>} IntersectionObject
- */
-/**
- * @typedef {import("typescript-toolkit/types/baseTypes").BaseType<"number">} BaseTypeUnion
+ * @typedef {import("typescript-toolkit").arrays.ArrayifyType<number[]>} ArrayifiedBar
  */
 
 /**
- * @import IsAny from "typescript-toolkit/types/isAny"
- * @import { UnionToIntersection } from "typescript-toolkit/types"
- * @import * as baseTypes from "typescript-toolkit/types/baseTypes"
+ * @import * as ns from "typescript-toolkit/arrays/arrayify"
  */
 /**
- * @typedef {IsAny<any>} IsAnyType
+ * @import { ArrayifyType } from "typescript-toolkit/arrays"
  */
 /**
- * @typedef {UnionToIntersection<{ foo: string; } | { bar: number; }>} IntersectionObject
+ * @typedef {ns.ArrayifyType<string>} ArrayifiedFoo
  */
 /**
- * @typedef {baseTypes.BaseTypeString<"Hello, World!">} BaseTypeStringUnion
+ * @typedef {ArrayifyType<number[]>} ArrayifiedBar
  */
 
 /**
- * @import { types } from "typescript-toolkit"
- * @import * as types from "typescript-toolkit/types"
+ * @import { arrays } from "typescript-toolkit"
+ * @import arrays from "typescript-toolkit/arrays"
  */
 /**
- * @typedef {types.IsAny<any>} IsAnyType
- */
-/**
- * @typedef {types.UnionToIntersection<{ foo: string; } | { bar: number; }>} IntersectionObject
- */
-/**
- * @typedef {types.BaseType<"number" | "null">} BaseTypeUnion
+ * @template T
+ * @typedef {arrays.ArrayifyType<T>} ArrayifiedFoobar
  */
 ```
 
@@ -80,3 +73,4 @@ For JavaScript projects, you can use [`import()` types](https://www.typescriptla
 - [`1.0.0`](https://github.com/FusedKush/typescript-toolkit/releases/1.0.0):
   - Added `arrays`
   - Added [`arrayify`](arrayify)
+  - Added [`toListString`](toListString)
