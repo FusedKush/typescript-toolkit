@@ -4,7 +4,7 @@ Utility tools for working with [Dynamic-Length Arrays](https://developer.mozilla
 
 ## Tool List
 - [`arrayify`](arrayify): Convert the specified type or value into an array, if it is not one already.
-- [`toListString`](toListString): Convert the specified array to a `string` containing a deliminator-separated list of the elements in the array.
+- [`toListString`](toListString): Convert the specified array to a `string` containing a list of the elements in the array.
 
 
 ## NPM Package Usage

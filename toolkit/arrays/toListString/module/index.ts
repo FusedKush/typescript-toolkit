@@ -1,10 +1,10 @@
 /**
  * Convert the specified array to a `string` containing
- * a deliminator-separated list of the elements in the array.
+ * a list of the elements in the array.
  * 
  * @example
  * toListString([])                                     // ""
- * toListString(["foo"])                                //  "foo"
+ * toListString(["foo"])                                // "foo"
  * toListString(["foo", "bar"])                         // "foo & bar"
  * toListString(["foo", "bar", "baz"]);                 // "foo, bar, & baz"
  * 
