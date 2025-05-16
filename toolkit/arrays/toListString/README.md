@@ -23,8 +23,9 @@ toListString(["foo", "bar", "baz"], null, "/");      // "foobarbaz"
 ## NPM Package Usage
 You can directly import the tool into your project:
 ```ts
-// These imports are equivalent
+// These imports are all equivalent
 import toListString from "typescript-toolkit/arrays/arrayify";
+import { toListString } from "typescript-toolkit/arrays/arrayify";
 import { toListString } from "typescript-toolkit/arrays";
 
 const listStr = toListString(["foo", "bar", "baz"]);
