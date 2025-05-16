@@ -84,4 +84,4 @@ For JavaScript projects, you can use [`import()` types](https://www.typescriptla
 
 
 ## Changelog
-- [`1.0.0`](https://github.com/FusedKush/typescript-toolkit/tree/releases/1.0.0): Added
+- [`1.0.0`](https://github.com/FusedKush/typescript-toolkit/releases/1.0.0): Added
