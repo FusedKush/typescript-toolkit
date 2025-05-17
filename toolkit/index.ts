@@ -1,5 +1,6 @@
 /**
- * The TypeScript Toolkit.
+ * A collection of various TypeScript tools, tricks, and utilities
+ * that can be used in a wide range of projects and programs.
  */
 declare module "./index.js";
 
