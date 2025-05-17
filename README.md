@@ -13,6 +13,7 @@
         <a href="CONTRIBUTING.md#reporting-issues">Report an Issue</a>
         &bull; <a href="CONTRIBUTING.md#making-a-feature-request-or-improvement-suggestion">Make a Suggestion</a>
         &bull; <a href="CONTRIBUTING.md#contributing-to-the-typescript-toolkit">Contribute</a>
+        &bull; <a href="LICENSE">License</a>
         &bull; <a href="SECURITY.md">Security Policy</a>
       </i>
     </div>
@@ -26,7 +27,7 @@ The TypeScript Toolkit can be used in two different ways:
 
 
 ### ...as a Collection of Code Snippets
-The primary intention of the TypeScript Toolkit is to serve as a collection of versatile and high-quality TypeScript and JavaScript code snippets. Each *tool* in the toolkit, such as `types/isAny`, contains two relevant folders:
+The primary intention of the TypeScript Toolkit is to serve as a collection of versatile and high-quality TypeScript and JavaScript code snippets. Each *tool* in the toolkit, such as `arrays/arrayify` or `types/baseTypes`, contains two relevant folders:
 - `/ts/`, which contains the *TypeScript* code snippets.
 - `/js/`, which contains the *JavaScript* code snippets.
 
@@ -38,7 +39,7 @@ Each code snippet can be copied-and-pasted directly into the desired codebase. E
 
 
 ### ...as an NPM Package
-The TypeScript Toolkit can also be used as an [NPM Package](https://www.npmjs.com/package/typescript-toolkit). Each *tool* in the toolkit, such as `types/isAny`, contains two relevant files and folders:
+The TypeScript Toolkit can also be used as an [NPM Package](https://www.npmjs.com/package/typescript-toolkit). Each *tool* in the toolkit, such as `arrays/arrayify` or `types/baseTypes`, contains two relevant files and folders:
 - `/module/`, which contains the TypeScript module code.
 - `/index.ts`, which simply re-exports the contents of `/module/index.ts`.
 
@@ -51,56 +52,57 @@ npm install typescript-toolkit
 You can then import any of the tools in the toolkit just as you would any other NPM Package:
 ```ts
 // These imports are all equivalent
-import IsAny from "typescript-toolkit/types/isAny";
-import * as UnionToIntersection from "typescript-toolkit/types/unionToIntersection";
-import { IsAny, UnionToIntersection } from "typescript-toolkit/types";
+import arrayify from "typescript-toolkit/arrays/arrayify";
+import { UnionToIntersection } from "typescript-toolkit/types/unionToIntersection";
+import { IsAny } from "typescript-toolkit/types";
 
-type Test = IsAny<any>;
-type Test = UnionToIntersection<{ foo: string; } | { bar: number; }>;
+type IsAnyType = IsAny<any>;
+type IntersectionObject = UnionToIntersection<{ foo: string; } | { bar: number; }>;
+const arrayifiedFoobar = arrayify("foobar");
 ```
 
 You can also import the namespaces themselves into your project:
 ```ts
 // These imports are all equivalent
-import { types } from "typescript-toolkit";
-import types from "typescript-toolkit/types";
+import { arrays, types } from "typescript-toolkit";
+import arrays from "typescript-toolkit/arrays";
 import * as types from "typescript-toolkit/types";
 
-type Test = types.IsAny<any>;
-type Test = types.UnionToIntersection<{ foo: string; } | { bar: number; }>;
+type IsAnyType = types.IsAny<any>;
+type IntersectionObject = types.UnionToIntersection<{ foo: string; } | { bar: number; }>;
+const arrayifiedFoobar = arrays.arrayify("foobar");
 ```
 
 For JavaScript projects, you can use [`import()` types](https://www.typescriptlang.org/docs/handbook/modules/reference.html#import-types) or [`@import` tags](https://www.typescriptlang.org/docs/handbook/jsdoc-supported-types.html#import) to virtually import type-based tools and namespaces:
 ```js
 /**
- * @typedef {import("typescript-toolkit/types").IsAny<any>} Test
+ * @typedef {import("typescript-toolkit/types").IsAny<any>} IsAnyType
  */
 /**
- * @typedef {import("typescript-toolkit").types.UnionToIntersection<{ foo: string; } | { bar: number; }>} Test
- */
-
-/**
- * @import IsAny from "typescript-toolkit/types/isAny"
- */
-/**
- * @import {UnionToIntersection} from "typescript-toolkit/types"
- */
-/**
- * @typedef {IsAny<any>} Test
- */
-/**
- * @typedef {UnionToIntersection<{ foo: string; } | { bar: number; }>} Test
+ * @typedef {import("typescript-toolkit").arrays.ArrayifyType<"foobar">} ArrayifiedFoobar
  */
 
 /**
- * @import {types} from "typescript-toolkit"
- * @import types from "typescript-toolkit/types"
+ * @import UnionToIntersection from "typescript-toolkit/types/unionToIntersection"
+ * @import { ArrayifyType } from "typescript-toolkit/arrays"
  */
 /**
- * @typedef {types.IsAny<any>} Test
+ * @typedef {UnionToIntersection<{ foo: string; } | { bar: number; }>} IntersectionObject
  */
 /**
- * @typedef {types.UnionToIntersection<{ foo: string; } | { bar: number; }>} Test
+ * @typedef {ArrayifyType<"foobar">} ArrayifiedFoobar
+ */
+
+/**
+ * @import arrays from "typescript-toolkit/arrays"
+ * @import * as types from "typescript-toolkit/types"
+ * @import { arrays, types } from "typescript-toolkit"
+ */
+/**
+ * @typedef {types.IsAny<any>} IsAnyType
+ */
+/**
+ * @typedef {arrays.ArrayifyType<"foobar">} ArrayifiedFoobar
  */
 ```
 
@@ -114,6 +116,8 @@ For JavaScript projects, you can use [`import()` types](https://www.typescriptla
 More information about the individual namespaces and tools in the TypeScript Toolkit can be found in their respective `README.md` files.
 
 API Documentation for the TypeScript Toolkit is available on the [Repository Wiki](https://github.com/FusedKush/typescript-toolkit/wiki).
+
+For licensing information, see [`LICENSE`](LICENSE).
 
 For information about filing issues, submitting suggestions, and reporting security vulnerabilities, see [`CONTRIBUTING.md`](CONTRIBUTING.md) and [`SECURITY.md`](SECURITY.md).
 
