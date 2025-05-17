@@ -11,8 +11,6 @@
   "main": "./dist/index.js",
   "exports": {
     ".": "./dist/index.js",
-    "./examples": "./dist/examples/index.js",
-    "./examples/exampleTool": "./dist/examples/exampleTool/index.js",
     "./arrays": "./dist/arrays/index.js",
     "./arrays/arrayify": "./dist/arrays/arrayify/index.js",
     "./arrays/toListString": "./dist/arrays/toListString/index.js",
