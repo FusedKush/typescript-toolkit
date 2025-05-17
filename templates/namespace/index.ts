@@ -1,9 +1,8 @@
 /**
- * Example tools.
+ * Namespace description goes here...
  * 
- * @since 0.0.1
+ * @since TARGET_VERSION
  */
 declare module "./index.js";
 
-export * from "./exampleTool/index.js";
 export * as default from "./index.js";

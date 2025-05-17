@@ -1,0 +1,43 @@
+name: Other Issue
+description: Report an issue with TypeScript Toolkit not described by any of the Issue Templates.
+labels: ["other issue"]
+body:
+  - type: checkboxes
+    id: existingIssueAffirmation
+    attributes:
+      label: Did you check if the issue you discovered has been reported already?
+      description: "[Existing Issues](https://github.com/FusedKush/typescript-toolkit/issues?q=is%3Aissue%20label%3Abug)"
+      options:
+        - label: Yes, I already checked for existing issues and did not find any matching the problem I'm encountering.
+          required: true
+    validations:
+      required: true
+  - type: checkboxes
+    id: otherIssueAffirmation
+    attributes:
+      label: Other Issue Acknowledgement
+      options:
+        - label: I acknowledge that issues not matching any of the Issue Templates may be closed without explanation at the discretion of the project maintainers.
+          required: true
+    validations:
+      required: true
+  - type: textarea
+    id: searchTerms
+    attributes:
+      label: Search Terms
+      description: "Please list all of the search terms you used when looking through the [Existing Issues](https://github.com/FusedKush/typescript-toolkit/issues?q=is%3Aissue%20label%3Abug). This will help others with the same problem find your issue easier."
+      placeholder: IsAny, IsAny wrong type, IsAny not working, etc...
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Issue
+    validations:
+      required: true
+  - type: markdown
+    attributes:
+      value: "## Thank you!"
+  - type: markdown
+    attributes:
+      value: Thank you for taking the time to submit this issue!
