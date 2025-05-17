@@ -20,7 +20,7 @@ You can directly import the tool into your project:
 ```ts
 // These imports are all equivalent
 import TOOL_NAME from "typescript-toolkit/NAMESPACE/TOOL_NAME";
-import * as TOOL_NAME from "typescript-toolkit/NAMESPACE/TOOL_NAME";
+import { TOOL_NAME } from "typescript-toolkit/NAMESPACE/TOOL_NAME";
 import { TOOL_NAME } from "typescript-toolkit/NAMESPACE";
 
 // Quick example of using the tool goes here...
@@ -38,7 +38,7 @@ import * as NAMESPACE from "typescript-toolkit/NAMESPACE";
 // NAMESPACE.TOOL_NAME
 ```
 
-For JavaScript projects, you can use [`import()` types](https://www.typescriptlang.org/docs/handbook/modules/reference.html#import-types) or the [`@import` tag](https://www.typescriptlang.org/docs/handbook/jsdoc-supported-types.html#import) to import the type:
+For JavaScript projects, you can use [`import()` types](https://www.typescriptlang.org/docs/handbook/modules/reference.html#import-types) or the [`@import` tag](https://www.typescriptlang.org/docs/handbook/jsdoc-supported-types.html#import) to virtually import the namespace or individual types:
 ```js
 /**
  * @typedef {import("typescript-toolkit/NAMESPACE").TOOL_NAME} Test
@@ -49,8 +49,6 @@ For JavaScript projects, you can use [`import()` types](https://www.typescriptla
 
 /**
  * @import TOOL_NAME from "typescript-toolkit/NAMESPACE/TOOL_NAME"
- */
-/**
  * @import { TOOL_NAME } from "typescript-toolkit/NAMESPACE"
  */
 /**
