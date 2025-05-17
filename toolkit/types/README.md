@@ -13,12 +13,12 @@ You can directly import tools into your project:
 ```ts
 // These imports are all equivalent
 import IsAny from "typescript-toolkit/types/isAny";
-import * as UnionToIntersection from "typescript-toolkit/types/unionToIntersection";
-import { BaseTypeString } from "typescript-toolkit/types";
+import * as baseTypes from "typescript-toolkit/types/baseTypes";
+import { UnionToIntersection } from "typescript-toolkit/types";
 
 type IsAnyType = IsAny<any>;
 type IntersectionObject = UnionToIntersection<{ foo: string; } | { bar: number; }>;
-type BaseTypeStringUnion = BaseTypeString<"Hello, World!">;
+type BaseTypeStringUnion = baseTypes.BaseTypeString<"Hello, World!">;
 ```
 
 You can also import the namespace into your project:
@@ -33,7 +33,7 @@ type IntersectionObject = types.UnionToIntersection<{ foo: string; } | { bar: nu
 type BaseTypeUnion = types.BaseType<"number" | "null">;
 ```
 
-For JavaScript projects, you can use [`import()` types](https://www.typescriptlang.org/docs/handbook/modules/reference.html#import-types) or the [`@import` tag](https://www.typescriptlang.org/docs/handbook/jsdoc-supported-types.html#import) to import the namespace or individual types:
+For JavaScript projects, you can use [`import()` types](https://www.typescriptlang.org/docs/handbook/modules/reference.html#import-types) or the [`@import` tag](https://www.typescriptlang.org/docs/handbook/jsdoc-supported-types.html#import) to virtually import the namespace or individual types:
 ```js
 /**
  * @typedef {import("typescript-toolkit/types").IsAny<any>} IsAnyType

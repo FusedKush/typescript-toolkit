@@ -36,7 +36,7 @@ var arrayifiedBar = arrays.arrayify(["Hello", "World!"]);
 const listStr = arrays.toListString(["foo", "bar", "baz"]);
 ```
 
-For JavaScript projects, you can use [`import()` types](https://www.typescriptlang.org/docs/handbook/modules/reference.html#import-types) or the [`@import` tag](https://www.typescriptlang.org/docs/handbook/jsdoc-supported-types.html#import) to import the namespace or individual types:
+For JavaScript projects, you can use [`import()` types](https://www.typescriptlang.org/docs/handbook/modules/reference.html#import-types) or the [`@import` tag](https://www.typescriptlang.org/docs/handbook/jsdoc-supported-types.html#import) to virtually import the namespace or individual types:
 ```js
 /**
  * @typedef {import("typescript-toolkit/arrays").ArrayifyType<string>} ArrayifiedFoo
@@ -46,13 +46,13 @@ For JavaScript projects, you can use [`import()` types](https://www.typescriptla
  */
 
 /**
- * @import * as ns from "typescript-toolkit/arrays/arrayify"
+ * @import * as arrayifyNs from "typescript-toolkit/arrays/arrayify"
  */
 /**
  * @import { ArrayifyType } from "typescript-toolkit/arrays"
  */
 /**
- * @typedef {ns.ArrayifyType<string>} ArrayifiedFoo
+ * @typedef {arrayifyNs.ArrayifyType<string>} ArrayifiedFoo
  */
 /**
  * @typedef {ArrayifyType<number[]>} ArrayifiedBar

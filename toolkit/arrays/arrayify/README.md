@@ -28,12 +28,12 @@ You can directly import the tool into your project:
 ```ts
 // These imports are all equivalent
 import arrayify from "typescript-toolkit/arrays/arrayify";
-import * as ns from "typescript-toolkit/arrays/arrayify";
+import * as arrayifyNs from "typescript-toolkit/arrays/arrayify";
 import { ArrayifyType, arrayify } from "typescript-toolkit/arrays";
 
-type ArrayifiedFoo = ns.ArrayifyType<string>;
+type ArrayifiedFoo = arrayifyNs.ArrayifyType<string>;
 type ArrayifiedBar = ArrayifyType<number[]>;
-var arrayifiedFoo = ns.arrayify(42);
+var arrayifiedFoo = arrayifyNs.arrayify(42);
 var arrayifiedBar = arrayify(["Hello", "World!"]);
 ```
 
@@ -50,7 +50,7 @@ var arrayifiedFoo = arrays.arrayify(42);
 var arrayifiedBar = arrays.arrayify(["Hello", "World!"]);
 ```
 
-For JavaScript projects, you can use [`import()` types](https://www.typescriptlang.org/docs/handbook/modules/reference.html#import-types) or the [`@import` tag](https://www.typescriptlang.org/docs/handbook/jsdoc-supported-types.html#import) to import the type:
+For JavaScript projects, you can use [`import()` types](https://www.typescriptlang.org/docs/handbook/modules/reference.html#import-types) or the [`@import` tag](https://www.typescriptlang.org/docs/handbook/jsdoc-supported-types.html#import) to virtually import individual types or the parent namespace:
 ```js
 /**
  * @typedef {import("typescript-toolkit/arrays").ArrayifyType<string>} ArrayifiedFoo
@@ -60,13 +60,13 @@ For JavaScript projects, you can use [`import()` types](https://www.typescriptla
  */
 
 /**
- * @import * as ns from "typescript-toolkit/arrays/arrayify"
+ * @import * as arrayifyNs from "typescript-toolkit/arrays/arrayify"
  */
 /**
  * @import { ArrayifyType } from "typescript-toolkit/arrays"
  */
 /**
- * @typedef {ns.ArrayifyType<string>} ArrayifiedFoo
+ * @typedef {arrayifyNs.ArrayifyType<string>} ArrayifiedFoo
  */
 /**
  * @typedef {ArrayifyType<number[]>} ArrayifiedBar

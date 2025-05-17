@@ -21,7 +21,7 @@ You can directly import the tool into your project:
 ```ts
 // These imports are all equivalent
 import IsAny from "typescript-toolkit/types/isAny";
-import * as IsAny from "typescript-toolkit/types/isAny";
+import { IsAny } from "typescript-toolkit/types/isAny";
 import { IsAny } from "typescript-toolkit/types";
 
 type Test = IsAny<any>;
@@ -37,7 +37,7 @@ import * as types from "typescript-toolkit/types";
 type Test = types.IsAny<any>;
 ```
 
-For JavaScript projects, you can use [`import()` types](https://www.typescriptlang.org/docs/handbook/modules/reference.html#import-types) or the [`@import` tag](https://www.typescriptlang.org/docs/handbook/jsdoc-supported-types.html#import) to import the type:
+For JavaScript projects, you can use [`import()` types](https://www.typescriptlang.org/docs/handbook/modules/reference.html#import-types) or the [`@import` tag](https://www.typescriptlang.org/docs/handbook/jsdoc-supported-types.html#import) to virtually import individual types or the parent namespace:
 ```js
 /**
  * @typedef {import("typescript-toolkit/types").IsAny<any>} Test
@@ -48,16 +48,14 @@ For JavaScript projects, you can use [`import()` types](https://www.typescriptla
 
 /**
  * @import IsAny from "typescript-toolkit/types/isAny"
- */
-/**
- * @import {IsAny} from "typescript-toolkit/types"
+ * @import { IsAny } from "typescript-toolkit/types"
  */
 /**
  * @typedef {IsAny<any>} Test
  */
 
 /**
- * @import {types} from "typescript-toolkit"
+ * @import { types } from "typescript-toolkit"
  * @import types from "typescript-toolkit/types"
  */
 /**

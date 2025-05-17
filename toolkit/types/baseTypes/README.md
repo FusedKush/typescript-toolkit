@@ -20,7 +20,7 @@ type NestedBaseTypeUnion = BaseType<BaseTypeString<"Hello, World!">>;
 // string
 
 type NestedBaseTypeStringUnion = BaseTypeString<BaseType<"function">>;
-// ( ...args: any[] ) => any;
+// "function"
 ```
 
 
@@ -53,13 +53,13 @@ type CustomBaseTypeUnion = types.BaseType<"string" | "number">;
 type CustomBaseTypeStringUnion = types.BaseTypeString<[42] | null>;
 ```
 
-For JavaScript projects, you can use [`import()` types](https://www.typescriptlang.org/docs/handbook/modules/reference.html#import-types) or [`@import` tags](https://www.typescriptlang.org/docs/handbook/jsdoc-supported-types.html#import) to virtually import the types or the parent namespace:
+For JavaScript projects, you can use [`import()` types](https://www.typescriptlang.org/docs/handbook/modules/reference.html#import-types) or the [`@import` tag](https://www.typescriptlang.org/docs/handbook/jsdoc-supported-types.html#import) to virtually import individual types or the parent namespace:
 ```js
 /**
  * @typedef {import("typescript-toolkit/types").BaseType} BaseTypeUnion
  */
 /**
- * @typedef {import("typescript-toolkit").types.TOOL_NAME} BaseTypeStringUnion
+ * @typedef {import("typescript-toolkit").types.BaseTypeString} BaseTypeStringUnion
  */
 
 /**
