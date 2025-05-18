@@ -9,7 +9,7 @@ body:
 
         Before creating a new issue, ensure that you _thoroughly_ search through the [existing issues](https://github.com/FusedKush/typescript-toolkit/issues?q=is%3Aissue%20label%3Aissue%20label%3Aproject) and make sure your issue has not been reported already.
 
-        Thank you for taking the time to submit this issue! If you think you might be able to resolve the issue yourself, considering [contributing](../CONTRIBUTING.md)!.
+        Thank you for taking the time to submit this issue! If you think you might be able to resolve the issue yourself, considering [contributing](https://github.com/FusedKush/typescript-toolkit/tree/main/CONTRIBUTING.md)!.
   - type: textarea
     id: searchTerms
     attributes:
