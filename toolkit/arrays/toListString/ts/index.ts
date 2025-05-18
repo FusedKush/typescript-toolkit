@@ -33,7 +33,7 @@
  * 
  * @returns             A List `string` made up of the stringified elements of `arr`.
  * 
- * @author              [via the _TypeScript Toolkit_](https://github.com/FusedKush/typescript-toolkit/tree/toolkit/arrays/toListString)
+ * @author              [via the _TypeScript Toolkit_](https://github.com/FusedKush/typescript-toolkit/tree/main/toolkit/arrays/toListString)
  * @since               1.0.0
  */
 function toListString (

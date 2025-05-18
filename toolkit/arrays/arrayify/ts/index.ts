@@ -13,7 +13,7 @@
  * 
  * @returns     The arrayified type of `T`.
  * 
- * @author      [via the _TypeScript Toolkit_](https://github.com/FusedKush/typescript-toolkit/tree/toolkit/arrays/arrayify)
+ * @author      [via the _TypeScript Toolkit_](https://github.com/FusedKush/typescript-toolkit/tree/main/toolkit/arrays/arrayify)
  * @since       1.0.0
  * @see         {@link arrayify `arrayify()`}
  */
@@ -36,7 +36,7 @@ type ArrayifyType <T> = (T extends any[] ? T : [T]);
  * 
  * @returns     The {@link ArrayifyType arrayified type} of `x`.
  * 
- * @author      [via the _TypeScript Toolkit_](https://github.com/FusedKush/typescript-toolkit/tree/toolkit/arrays/arrayify)
+ * @author      [via the _TypeScript Toolkit_](https://github.com/FusedKush/typescript-toolkit/tree/main/toolkit/arrays/arrayify)
  * @since       1.0.0
  * @see         {@link ArrayifyType}
  */

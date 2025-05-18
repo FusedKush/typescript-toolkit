@@ -11,5 +11,5 @@
  *         : false
  * )} IsAny
  * 
- * @author [via the _TypeScript Toolkit_](https://github.com/FusedKush/typescript-toolkit/toolkit/types/isAny)
+ * @author [via the _TypeScript Toolkit_](https://github.com/FusedKush/typescript-toolkit/tree/main/toolkit/types/isAny)
  */

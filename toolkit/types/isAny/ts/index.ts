@@ -11,7 +11,7 @@
  * 
  * @returns     `true` if `T` is `any` and `false` otherwise.
  * 
- * @author [via the _TypeScript Toolkit_](https://github.com/FusedKush/typescript-toolkit/toolkit/types/isAny)
+ * @author [via the _TypeScript Toolkit_](https://github.com/FusedKush/typescript-toolkit/tree/main/toolkit/types/isAny)
  */
 type IsAny <T> = (
     boolean extends (T extends never ? true : false)
