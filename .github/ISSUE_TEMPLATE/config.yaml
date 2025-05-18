@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Discussions
+    url: https://github.com/FusedKush/typescript-toolkit/discussions
+    about: You can post questions and discuss things here.
+  - name: Contact
+    url: mailto:contact@typescript-toolkit.org
+    about: You can send private queries to the TypeScript Toolkit Team via email.

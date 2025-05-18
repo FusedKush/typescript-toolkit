@@ -1,33 +1,44 @@
 name: Toolkit Tool Issue Report
 description: Report an Issue with a Tool in the TypeScript Toolkit.
-labels: ["bug", "toolkit tool"]
+labels: ["issue", "toolkit"]
 body:
-  - type: checkboxes
-    id: affirmation
+  - type: markdown
     attributes:
-      label: Did you check if the issue you discovered has been reported already?
-      description: "[Existing Issues](https://github.com/FusedKush/typescript-toolkit/issues?q=is%3Aissue%20label%3Abug)"
-      options:
-        - label: Yes, I already checked for existing issues and did not find any matching the problem I'm encountering.
-          required: true
-    validations:
-      required: true
+      value: |
+        Please fill in every section of the issue report completely.
+
+        Before creating a new issue, ensure that you _thoroughly_ search through the [existing issues](https://github.com/FusedKush/typescript-toolkit/issues?q=is%3Aissue%20label%3Aissue%20label%3Atoolkit) and make sure your issue has not been reported already.
+
+        Thank you for taking the time to submit this issue! If you think you might be able to resolve the issue yourself, considering [contributing](../CONTRIBUTING.md)!.
   - type: textarea
     id: searchTerms
     attributes:
       label: Search Terms
-      description: "Please list all of the search terms you used when looking through the [Existing Issues](https://github.com/FusedKush/typescript-toolkit/issues?q=is%3Aissue%20label%3Abug). This will help others with the same problem find your issue easier."
-      placeholder: IsAny, IsAny wrong type, IsAny not working, etc...
+      description: |
+        Please list all of the search terms you used when searching through the existing issues.
+        
+        This will help others with the same problem find your issue easier.
+      placeholder: |
+        arrayify,
+        toListString not working,
+        UnionToIntersection doesn't work with x with y,
+        etc...
     validations:
       required: true
-  - type: checkboxes
+  - type: dropdown
     id: tools
     attributes:
       label: Affected Tools
       description: Select all of the Tools in the TypeScript Toolkit that this issue applies to.
+      multiple: true
       options:
-        - label: "`types/isAny`"
-        - label: "`types/unionToIntersection`"
+        - "`arrays/ArrayifyType`"
+        - "`arrays/arrayify()`"
+        - "`arrays/toListString()`"
+        - "`types/BaseType`"
+        - "`types/BaseTypeString`"
+        - "`types/IsAny`"
+        - "`types/UnionToIntersection`"
     validations:
       required: true
   - type: dropdown
@@ -44,14 +55,14 @@ body:
     validations:
       required: true
   - type: textarea
-    id: description
+    id: issueDescription
     attributes:
       label: Description of Issue
       description: |
         Please describe the bug, issue, or problem you have been experiencing.
       
         Please include as much information as possible in your report to help with understanding and resolving the issue, including:
-        - The type of the issue
+        - The nature of the issue
         - How the issue affects client code
         - The affected source file(s), branch(es), and/or tag(s)
         - Any special files or configuration required for the issue to appear
@@ -59,9 +70,3 @@ body:
       placeholder: I was doing ... using ... with the intention of ... and then ... happened. 
     validations:
       required: true
-  - type: markdown
-    attributes:
-      value: "## Thank you!"
-  - type: markdown
-    attributes:
-      value: Thank you for taking the time to submit this issue! If you think you might be able to fix the issue yourself, considering [contributing](../CONTRIBUTING.md)!.
