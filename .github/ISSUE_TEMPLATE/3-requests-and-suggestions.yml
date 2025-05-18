@@ -33,16 +33,16 @@ body:
       multiple: true
       options:
         - Toolkit Namespaces
-        - "  `arrays`"
-        - "  `types`"
+        - "  - `arrays`"
+        - "  - `types`"
         - Toolkit Tools
-        - "  `arrays/ArrayifyType`"
-        - "  `arrays/arrayify()`"
-        - "  `arrays/toListString()`"
-        - "  `types/BaseType`"
-        - "  `types/BaseTypeString`"
-        - "  `types/IsAny`"
-        - "  `types/UnionToIntersection`"
+        - "  - `arrays/ArrayifyType`"
+        - "  - `arrays/arrayify()`"
+        - "  - `arrays/toListString()`"
+        - "  - `types/BaseType`"
+        - "  - `types/BaseTypeString`"
+        - "  - `types/IsAny`"
+        - "  - `types/UnionToIntersection`"
         - Project Documentation
         - API Documentation Wiki
         - Project Layout, Organization, or Architecture
