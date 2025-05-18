@@ -14,7 +14,7 @@
  * 
  * @template U  The union being transformed into an intersection.
  * 
- * @author      [via the _TypeScript Toolkit_](https://github.com/FusedKush/typescript-toolkit/toolkit/types/unionToIntersection)
+ * @author      [via the _TypeScript Toolkit_](https://github.com/FusedKush/typescript-toolkit/tree/main/toolkit/types/unionToIntersection)
  */
 type UnionToIntersection <U> = (
     [U] extends [never]
