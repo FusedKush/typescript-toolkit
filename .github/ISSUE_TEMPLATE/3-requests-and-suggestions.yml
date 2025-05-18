@@ -8,6 +8,8 @@ body:
         Please fill in every section of the request completely.
 
         Before creating a new feature request or suggestion, ensure that you _thoroughly_ search through the [existing suggestions](https://github.com/FusedKush/typescript-toolkit/issues?q=is%3Aissue%20label%3Aenhancement) and make sure your suggestion has not been made already.
+
+        If you think you might be able to implement this feature request or suggestion yourself, considering [contributing](https://github.com/FusedKush/typescript-toolkit/tree/main/CONTRIBUTING.md)!.
   - type: textarea
     id: searchTerms
     attributes:
