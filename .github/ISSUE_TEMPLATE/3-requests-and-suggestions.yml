@@ -1,0 +1,69 @@
+name: Feature Request or Suggestion
+description: Request a new feature, change, or enhancement to the TypeScript Toolkit.
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please fill in every section of the request completely.
+
+        Before creating a new feature request or suggestion, ensure that you _thoroughly_ search through the [existing suggestions](https://github.com/FusedKush/typescript-toolkit/issues?q=is%3Aissue%20label%3Aenhancement) and make sure your suggestion has not been made already.
+
+        If you think you might be able to implement this feature request or suggestion yourself, considering [contributing](https://github.com/FusedKush/typescript-toolkit/tree/main/CONTRIBUTING.md)!.
+  - type: textarea
+    id: searchTerms
+    attributes:
+      label: Search Terms
+      description: |
+        Please list all of the search terms you used when searching through the existing suggestions.
+        
+        This will help others looking for the same feature or enhancement find your request easier.
+      placeholder: |
+        add x to y,
+        add support for x to y,
+        allow x to work with y when z,
+        etc...
+    validations:
+      required: true
+  - type: dropdown
+    id: type
+    attributes:
+      label: Issue Type
+      description: What aspect(s) of the project does your feature request or suggestion pertain to?
+      multiple: true
+      options:
+        - Toolkit Namespaces
+        - "  - `arrays`"
+        - "  - `types`"
+        - Toolkit Tools
+        - "  - `arrays/ArrayifyType`"
+        - "  - `arrays/arrayify()`"
+        - "  - `arrays/toListString()`"
+        - "  - `types/BaseType`"
+        - "  - `types/BaseTypeString`"
+        - "  - `types/IsAny`"
+        - "  - `types/UnionToIntersection`"
+        - Project Documentation
+        - API Documentation Wiki
+        - Project Layout, Organization, or Architecture
+        - Code Snippet Usage
+        - NPM Package Installation, Deployment, or Usage
+        - Contributing
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: suggestion
+    attributes:
+      label: Feature Request or Suggestion
+      description: |
+        Please describe your desired feature, change, or enhancement to the TypeScript Toolkit.
+      
+        Please include as much information as possible in your request to help with understanding and potentially implementing the suggestion, including:
+        - What the feature, change, or enhancement should accomplishment
+        - Why the feature, change, or enchancement is useful/necessary for client code
+        - Any potential consequences or downsides of the feature, change, or enhancement, for the project or for client code.
+        - Instructions for implementing the feature, change, or enhancement, if applicable.
+      placeholder: I was doing ... using ... with the intention of ... and then ... happened. 
+    validations:
+      required: true
