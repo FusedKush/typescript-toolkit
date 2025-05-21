@@ -6,6 +6,8 @@
  * recognized by the [`typeof` operator](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/typeof).
  * 
  * @example
+ * // Types //
+ * 
  * type BaseTypeUnion = BaseType;
  * // string | number | bigint | boolean | symbol | object | any[] | ((...args: any[]) => any) | null | undefined
  * 
@@ -24,10 +26,25 @@
  * type NestedBaseTypeStringUnion = BaseTypeString<BaseType<"function">>;
  * // ( ...args: any[] ) => any;
  * 
+ * 
+ * // Functions //
+ * 
+ * var baseTypeValue = getBaseType(["foo", "bar", "baz"]);
+ * // "array"
+ * 
+ * if (isBaseType(someUnknownValue, ["string", "number", "boolean"])) {
+ *    console.log(`The Unknown Value: ${someUnknownValue}`);
+ * }
+ * 
+ * assertBaseType([42], ["object", "function"]);
+ * // throws: TypeError("The specified value is not of any of the following types: object or function (A array was provided).");
+ * 
  * @author Zach Vaughan (FusedKush)
  * @since 1.0.0
  */
 declare module "./index.js";
+
+import { arrayify, toListString } from "../../../arrays/index.js";
 
 
 /* Internal Helper Types */
@@ -54,7 +71,7 @@ type _BaseTypeMap = {
 };
 
 
-/* Exported Members */
+/* Exported Types */
 
 /**
  * The _Base Types_ from which all types are derived.
@@ -84,10 +101,13 @@ type _BaseTypeMap = {
  *                          If `TypeStringT` is `never` or the entire `BaseTypeString` union,
  *                          a union of all of the _Base Types_ will be returned.
  * 
- * @author Zach Vaughan (FusedKush)
- * @since 1.0.0
+ * @author                  Zach Vaughan (FusedKush)
+ * @since                   1.0.0
  * 
- * @see {@link BaseTypeString}
+ * @see                     {@link BaseTypeString}
+ * @see                     {@link getBaseType `getBaseType()`}
+ * @see                     {@link isBaseType `isBaseType()`}
+ * @see                     {@link assertBaseType `assertBaseType()`}
  */
 export type BaseType <TypeStringT extends BaseTypeString = never> = _BaseTypeMap[
     [TypeStringT] extends [never]
@@ -123,10 +143,13 @@ export type BaseType <TypeStringT extends BaseTypeString = never> = _BaseTypeMap
  *                  If `TypeT` is `any` or the entire `BaseType` union,
  *                  a union of all of the Base Type `string` members will be returned.
  * 
- * @author Zach Vaughan (FusedKush)
- * @since 1.0.0
+ * @author          Zach Vaughan (FusedKush)
+ * @since           1.0.0
  * 
- * @see {@link BaseType}
+ * @see             {@link BaseType}
+ * @see             {@link getBaseType `getBaseType()`}
+ * @see             {@link isBaseType `isBaseType()`}
+ * @see             {@link assertBaseType `assertBaseType()`}
  */
 export type BaseTypeString <TypeT extends BaseType = any> = keyof {
     [
@@ -143,5 +166,110 @@ export type BaseTypeString <TypeT extends BaseType = any> = keyof {
         )
     ]: _BaseTypeMap[K];
 };
+
+
+/* Exported Functions */
+
+/**
+ * Get the {@link BaseType} of the given value.
+ * 
+ * @template T  The type of the specified value.
+ * 
+ * @param x     The value being evaluated.
+ * 
+ * @returns     A {@link BaseTypeString} corresponding to the {@link BaseType} of `x`.
+ * 
+ * @author      Zach Vaughan (FusedKush)
+ * @since       1.0.0
+ * 
+ * @see         {@link BaseType}
+ * @see         {@link isBaseType `isBaseType()`}
+ * @see         {@link assertBaseType `assertBaseType()`}
+ */
+export function getBaseType <T extends BaseType> ( x: T ): BaseTypeString<T> {
+
+    const xType = typeof x;
+
+    if (xType == 'object') {
+        if (xType === null)
+            return "null" as BaseTypeString<T>;
+        else if (Array.isArray(x))
+            return "array" as BaseTypeString<T>;
+    }
+
+    return xType as BaseTypeString<T>;
+
+}
+/**
+ * Check if the given value is of any of the specified {@link BaseType}s.
+ * 
+ * @template TypesT The type of the `types` argument.
+ * 
+ * @param x         The value being evaluated.
+ * 
+ * @param types     The {@link BaseTypeString} or an array of `BaseTypeString`s
+ *                  corresponding to the {@link BaseType}(s) to check for.
+ * 
+ * @returns         `true` if `x` is of the specified {@link BaseType}(s)
+ *                  or `false` if it is not.
+ * 
+ * @author          Zach Vaughan (FusedKush)
+ * @since           1.0.0
+ * 
+ * @see             {@link BaseType}
+ * @see             {@link getBaseType `getBaseType()`}
+ * @see             {@link assertBaseType `assertBaseType()`}
+ */
+export function isBaseType <TypesT extends BaseTypeString | BaseTypeString[]> (
+    x: BaseType,
+    types: TypesT
+): x is BaseType<TypesT extends BaseTypeString[] ? TypesT[number] : TypesT> {
+
+    return (arrayify(types) as TypesT).includes(getBaseType(x));
+
+}
+/**
+ * Assert the given value is of any of the specified {@link BaseType}s
+ * and throw a {@link TypeError} if it is not.
+ * 
+ * @template TypesT The type of the `types` argument.
+ * 
+ * @param x         The value being evaluated.
+ * 
+ * @param types     The {@link BaseTypeString} or an array of `BaseTypeString`s
+ *                  corresponding to the {@link BaseType}(s) to check for.
+ * 
+ * @returns         `true` if `x` is of the specified {@link BaseType}(s).
+ * 
+ * @throws          A {@link TypeError} if `x` is not of the specified {@link BaseType}(s).
+ * 
+ * @author          Zach Vaughan (FusedKush)
+ * @since           1.0.0
+ * 
+ * @see             {@link BaseType}
+ * @see             {@link getBaseType `getBaseType()`}
+ * @see             {@link isBaseType `isBaseType()`}
+ */
+export function assertBaseType <TypesT extends BaseTypeString | BaseTypeString[]> (
+    x: BaseType,
+    types: TypesT
+): x is BaseType<TypesT extends BaseTypeString[] ? TypesT[number] : TypesT> {
+
+    if (!isBaseType(x, types)) {
+        throw new TypeError(
+            "The specified value is not of "
+                + Array.isArray(types)
+                        ? `any of the following types: ${toListString(types as BaseTypeString[], ' or ')}`
+                        : `type ${types}`
+                + ` (A ${getBaseType(x)} was provided).`
+        );
+    }
+
+    return true;
+
+}
+
+
+/* Default Export */
 
 export * as default from "./index.js";

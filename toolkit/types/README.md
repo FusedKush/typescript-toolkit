@@ -1,6 +1,46 @@
 # `types`
 General-Purpose TypeScript Helper Types.
 
+```ts
+/* types/isAny */
+
+type IsAnyType = IsAny<any>;       // true
+type IsAnyType = IsAny<unknown>;   // false
+type IsAnyType = IsAny<never>;     // false
+type IsAnyType = IsAny<42>;        // false
+
+
+/* types/unionToIntersection */
+
+interface Foo { foo: string; }
+interface Bar { bar: number; }
+
+type Foobar = Foo | Bar;
+// { foo: string; } | { bar: number; }
+
+type Test = UnionToIntersection<Foobar>;
+// { foo: string; bar: number; }
+
+
+/* types/baseTypes */
+
+type BaseTypeUnion = BaseType;
+// string | number | bigint | boolean | symbol | object | any[] | ((...args: any[]) => any) | null | undefined
+
+type BaseTypeStringUnion = BaseTypeString;
+// "string" | "number" | "bigint" | "boolean" | "symbol" | "undefined" | "object" | "function" | "null" | "array"
+
+var baseTypeValue = getBaseType(["foo", "bar", "baz"]);
+// "array"
+
+if (isBaseType(someUnknownValue, ["string", "number", "boolean"])) {
+   console.log(`The Unknown Value: ${someUnknownValue}`);
+}
+
+assertBaseType([42], ["object", "function"]);
+// throws: TypeError("The specified value is not of any of the following types: object or function (A array was provided).");
+```
+
 
 ## Tool List
 - [`baseTypes`](baseTypes): Types representing the _Base Types_ from which all types are derived.
@@ -18,7 +58,7 @@ import { UnionToIntersection } from "typescript-toolkit/types";
 
 type IsAnyType = IsAny<any>;
 type IntersectionObject = UnionToIntersection<{ foo: string; } | { bar: number; }>;
-type BaseTypeStringUnion = baseTypes.BaseTypeString<"Hello, World!">;
+var baseTypeValue = baseTypes.getBaseType(["foo", "bar", "baz"]);
 ```
 
 You can also import the namespace into your project:
@@ -30,7 +70,7 @@ import * as types from "typescript-toolkit/types";
 
 type IsAnyType = types.IsAny<any>;
 type IntersectionObject = types.UnionToIntersection<{ foo: string; } | { bar: number; }>;
-type BaseTypeUnion = types.BaseType<"number" | "null">;
+var baseTypeValue = types.getBaseType(["foo", "bar", "baz"]);
 ```
 
 For JavaScript projects, you can use [`import()` types](https://www.typescriptlang.org/docs/handbook/modules/reference.html#import-types) or the [`@import` tag](https://www.typescriptlang.org/docs/handbook/jsdoc-supported-types.html#import) to virtually import the namespace or individual types:
