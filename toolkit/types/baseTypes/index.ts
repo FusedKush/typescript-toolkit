@@ -6,6 +6,8 @@
  * recognized by the [`typeof` operator](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/typeof).
  * 
  * @example
+ * // Types //
+ * 
  * type BaseTypeUnion = BaseType;
  * // string | number | bigint | boolean | symbol | object | any[] | ((...args: any[]) => any) | null | undefined
  * 
@@ -24,9 +26,29 @@
  * type NestedBaseTypeStringUnion = BaseTypeString<BaseType<"function">>;
  * // ( ...args: any[] ) => any;
  * 
+ * 
+ * // Functions //
+ * 
+ * var baseTypeValue = getBaseType(["foo", "bar", "baz"]);
+ * // "array"
+ * 
+ * if (isBaseType(someUnknownValue, ["string", "number", "boolean"])) {
+ *    console.log(`The Unknown Value: ${someUnknownValue}`);
+ * }
+ * 
+ * assertBaseType([42], ["object", "function"]);
+ * // throws: TypeError("The specified value is not of any of the following types: object or function (A array was provided).");
+ * 
  * @author Zach Vaughan (FusedKush)
  * @since 1.0.0
  */
 declare module "./index.js";
 
-export { default, BaseType, BaseTypeString } from "./module/index.js";
+export {
+    default,
+    BaseType,
+    BaseTypeString,
+    getBaseType,
+    isBaseType,
+    assertBaseType
+} from "./module/index.js";

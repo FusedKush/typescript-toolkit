@@ -20,7 +20,8 @@ const foobar = ( numbers: number | number[] ): number => arrayify(numbers).lengt
 ## Information
 - **Author**: [Zach Vaughan (FusedKush)](https://github.com/FusedKush)
 - **Depends On**: _None_
-- **Dependents**: _None_
+- **Dependents**:
+  - [`types/baseTypes`](../../types/baseTypes)
 
 
 ## NPM Package Usage

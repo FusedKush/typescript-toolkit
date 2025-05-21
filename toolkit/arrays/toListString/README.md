@@ -17,7 +17,8 @@ toListString(["foo", "bar", "baz"], null, "/");      // "foobarbaz"
 ## Information
 - **Author**: [Zach Vaughan (FusedKush)](https://github.com/FusedKush)
 - **Depends On**: _None_
-- **Dependents**: _None_
+- **Dependents**:
+  - [`types/baseTypes`](../../types/baseTypes)
 
 
 ## NPM Package Usage

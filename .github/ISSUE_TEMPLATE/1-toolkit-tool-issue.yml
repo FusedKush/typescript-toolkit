@@ -37,6 +37,9 @@ body:
         - "`arrays/toListString()`"
         - "`types/BaseType`"
         - "`types/BaseTypeString`"
+        - "`types/getBaseType()`"
+        - "`types/isBaseType()`"
+        - "`types/assertBaseType()`"
         - "`types/IsAny`"
         - "`types/UnionToIntersection`"
     validations:
