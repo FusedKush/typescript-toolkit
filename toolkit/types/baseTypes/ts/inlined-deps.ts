@@ -167,7 +167,7 @@ function isBaseType <TypesT extends BaseTypeString | BaseTypeString[]> (
 ): x is BaseType<TypesT extends BaseTypeString[] ? TypesT[number] : TypesT> {
 
     return (
-        // Inlined Toolkit Dependency
+        // Inlined TypeScript Toolkit Dependency
         (Array.isArray(x) ? x : [x]) as TypesT
     ).includes(getBaseType(x));
 
@@ -197,7 +197,7 @@ function assertBaseType <TypesT extends BaseTypeString | BaseTypeString[]> (
     types: TypesT
 ): x is BaseType<TypesT extends BaseTypeString[] ? TypesT[number] : TypesT> {
 
-    // Inlined Toolkit Dependency
+    // Inlined TypeScript Toolkit Dependency
     /**
      * Convert the specified array to a `string` containing
      * a list of the elements in the array.
