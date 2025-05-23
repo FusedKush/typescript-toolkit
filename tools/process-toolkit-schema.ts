@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync } from "node:fs";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import YAML from "yaml";
 
@@ -42,6 +42,59 @@ interface ScriptOptions {
 
 };
 
+class SchemaValidationError extends Error implements SchemaValidationError.ValidationDetails {
+
+    readonly namespace?: string;
+    readonly tool?: string;
+
+    readonly schemaSyntaxError?: boolean;
+    readonly directoryValidationError?: boolean;
+
+
+    constructor ( message?: string | null, options?: SchemaValidationError.ErrorOptions ) {
+
+        super(
+            `The TypeScript Toolkit Schema Failed Validation${message ? `: ${message}` : '.'}`,
+            options
+        );
+
+        if (options) {
+            this.namespace = options.namespace;
+            this.tool = options.tool;
+    
+            if (typeof options.schemaSyntaxError == 'boolean' && typeof options.directoryValidationError == 'boolean') {
+                this.schemaSyntaxError = options.schemaSyntaxError;
+                this.directoryValidationError = options.directoryValidationError;
+            }
+            else if (typeof options.schemaSyntaxError == 'boolean') {
+                this.schemaSyntaxError = options.schemaSyntaxError;
+                this.directoryValidationError = !options.schemaSyntaxError;
+            }
+            else if (typeof options.directoryValidationError == 'boolean') {
+                this.schemaSyntaxError = !options.directoryValidationError;
+                this.directoryValidationError = options.directoryValidationError;
+            }
+        }
+    
+    }
+
+}
+namespace SchemaValidationError {
+
+    export interface ValidationDetails {
+
+        namespace?: string;
+        tool?: string;
+
+        schemaSyntaxError?: boolean;
+        directoryValidationError?: boolean;
+
+    }
+
+    export interface ErrorOptions extends globalThis.ErrorOptions, ValidationDetails {}
+
+}
+
 
 /* Constants & Program Arguments */
 
@@ -57,7 +110,16 @@ const readYamlFile = <T extends Record<string, any>> ( filepath: YamlFilePath ):
 function fetchToolkitSchema (): ToolkitSchema {
 
     try {
-        return readJsonFile(`${ROOT_PATH}/toolkit/schema.json`);
+        let schema = readJsonFile(`${ROOT_PATH}/toolkit/schema.json`);
+        let keys = Object.keys(schema);
+        
+        keys.forEach((key) => {
+
+            if (key.startsWith('$'))
+                delete schema[key];
+
+        });
+        return schema;
     }
     catch (error) {
         throw new Error(
@@ -68,6 +130,84 @@ function fetchToolkitSchema (): ToolkitSchema {
 
 }
 
+function verifySchema ( schema: ToolkitSchema, dryRun: boolean ): void {
+
+    try {
+        for (const namespaceName in schema) {
+            const namespace = schema[namespaceName];
+            
+            if (!existsSync(`${ROOT_PATH}/toolkit/${namespaceName}`)) {
+                throw new SchemaValidationError(
+                    `Missing Namespace '${namespaceName}' in the /toolkit Directory.`,
+                    {
+                        namespace: namespaceName,
+                        directoryValidationError: true
+                    }
+                );
+            }
+    
+            for (const toolName in namespace.tools) {
+                const tool = namespace.tools[toolName];
+                const fullToolName = `${namespaceName}/${toolName}`;
+    
+                if (tool.dependencies) {
+                    // Validate Tool Dependencies
+                    tool.dependencies.forEach((dependency) => {
+    
+                        const segments = dependency.split('/', 2);
+                        
+                        if ( !(segments[0] in schema) ) {
+                            throw new SchemaValidationError(
+                                `Unknown Namespace '${segments[0]}' specified as a Dependency for '${fullToolName}'.`,
+                                {
+                                    namespace: namespaceName,
+                                    tool: toolName,
+                                    schemaSyntaxError: true
+                                }
+                            );
+                        }
+                        else if ( !(segments[1] in schema[segments[0]].tools) ) {
+                            throw new SchemaValidationError(
+                                `Unknown Tool '${segments[1]}' in Namespace '${segments[0]}' specified as a Dependency for '${fullToolName}'.`,
+                                {
+                                    namespace: namespaceName,
+                                    tool: toolName,
+                                    schemaSyntaxError: true
+                                }
+                            );
+                        }
+    
+                    });
+                }
+    
+                if (!existsSync(`${ROOT_PATH}/toolkit/${fullToolName}`)) {
+                    throw new SchemaValidationError(
+                        `Missing Tool '${toolName}' in Namespace '${namespaceName}' in the /toolkit Directory.`,
+                        {
+                            namespace: namespaceName,
+                            tool: toolName,
+                            directoryValidationError: true
+                        }
+                    );
+                }
+            }
+        }
+
+        if (!dryRun)
+            console.log("[+] Toolkit Schema Validated.");
+        else
+            console.log("Successfully Validated the Toolkit Schema!");
+    }
+    catch (error) {
+        if (dryRun && error instanceof SchemaValidationError) {
+            console.error(error);
+        }
+        else {
+            throw error;
+        }
+    }
+
+}
 function updatePackageExports ( schema: ToolkitSchema, dryRun: boolean ): void {
 
     interface PackageConfig {
@@ -591,6 +731,8 @@ function updateReadmeFiles ( schema: ToolkitSchema, dryRun: boolean ): void {
 
     /* Perform the specified actions */
 
+    if (options.verifySchema)
+        verifySchema(schema, options.dryRun);
     if (options.updatePackageExports)
         updatePackageExports(schema, options.dryRun);
     if (options.updateIssueTemplates)
