@@ -292,7 +292,7 @@ function updateIssueTemplates ( schema: ToolkitSchema, dryRun: boolean ): void {
         ]
     }
 
-    const ISSUE_TEMPLATE_DIRECTORY_PATH = "../.github/ISSUE_TEMPLATE";
+    const ISSUE_TEMPLATE_DIRECTORY_PATH = `${ROOT_PATH}/.github/ISSUE_TEMPLATE`;
     const TOOLKIT_TOOL_ISSUE_REPORT_PATH = `${ISSUE_TEMPLATE_DIRECTORY_PATH}/1-toolkit-tool-issue.yml`;
     const REQUESTS_AND_SUGGESTIONS_PATH = `${ISSUE_TEMPLATE_DIRECTORY_PATH}/3-requests-and-suggestions.yml`;
 
