@@ -30,10 +30,22 @@ interface ToolkitSchema {
     }
 }
 
+interface ScriptOptions {
+
+    dryRun: boolean;
+
+    verifySchema: boolean;
+    updatePackageExports: boolean;
+    updateIssueTemplates: boolean;
+    updateReadmeFiles: boolean;
+    updateDependencyImports: boolean;
+
+};
+
 
 /* Constants & Program Arguments */
 
-const DRY_RUN = (process.argv.includes('-d') || process.argv.includes('--dry-run'));
+const ROOT_PATH = "..";
 
 
 /* Helper Functions */
@@ -45,7 +57,7 @@ const readYamlFile = <T extends Record<string, any>> ( filepath: YamlFilePath ):
 function fetchToolkitSchema (): ToolkitSchema {
 
     try {
-        return readJsonFile('./toolkit/schema.json');
+        return readJsonFile(`${ROOT_PATH}/toolkit/schema.json`);
     }
     catch (error) {
         throw new Error(
@@ -56,7 +68,7 @@ function fetchToolkitSchema (): ToolkitSchema {
 
 }
 
-function updatePackageExports ( schema: ToolkitSchema ): void {
+function updatePackageExports ( schema: ToolkitSchema, dryRun: boolean ): void {
 
     interface PackageConfig {
         [x: string]: any;
@@ -66,7 +78,7 @@ function updatePackageExports ( schema: ToolkitSchema ): void {
         }
     }
 
-    const PACKAGE_JSON_PATH = "./package.json";
+    const PACKAGE_JSON_PATH = `${ROOT_PATH}/package.json`;
 
     const getDistFilePath = ( ...segments: string[] ) => `./dist/${segments.join('/')}/index.js` as const;
 
@@ -86,7 +98,7 @@ function updatePackageExports ( schema: ToolkitSchema ): void {
             }
         }
 
-        if (!DRY_RUN) {
+        if (!dryRun) {
             writeFileSync(PACKAGE_JSON_PATH, JSON.stringify(packageConfig, null, 2));
             console.log(`[+] Updated package.json.`);
         }
@@ -103,7 +115,7 @@ function updatePackageExports ( schema: ToolkitSchema ): void {
     }
 
 }
-function updateIssueTemplates ( schema: ToolkitSchema ): void {
+function updateIssueTemplates ( schema: ToolkitSchema, dryRun: boolean ): void {
 
     interface ToolkitToolIssueReport {
         [x: string]: any;
@@ -140,7 +152,7 @@ function updateIssueTemplates ( schema: ToolkitSchema ): void {
         ]
     }
 
-    const ISSUE_TEMPLATE_DIRECTORY_PATH = "./.github/ISSUE_TEMPLATE";
+    const ISSUE_TEMPLATE_DIRECTORY_PATH = "../.github/ISSUE_TEMPLATE";
     const TOOLKIT_TOOL_ISSUE_REPORT_PATH = `${ISSUE_TEMPLATE_DIRECTORY_PATH}/1-toolkit-tool-issue.yml`;
     const REQUESTS_AND_SUGGESTIONS_PATH = `${ISSUE_TEMPLATE_DIRECTORY_PATH}/3-requests-and-suggestions.yml`;
 
@@ -170,7 +182,7 @@ function updateIssueTemplates ( schema: ToolkitSchema ): void {
             }
         }
 
-        if (!DRY_RUN) {
+        if (!dryRun) {
             writeFileSync(REQUESTS_AND_SUGGESTIONS_PATH, YAML.stringify(toolkitToolIssueReport));
             console.log(`[+] Updated the 'Toolkit Tool Issue Report' GitHub Issue Template.`);
         }
@@ -231,7 +243,7 @@ function updateIssueTemplates ( schema: ToolkitSchema ): void {
             "Other"
         );
 
-        if (!DRY_RUN) {
+        if (!dryRun) {
             writeFileSync(REQUESTS_AND_SUGGESTIONS_PATH, YAML.stringify(requestsAndSuggestions));
             console.log(`[+] Updated the 'Feature Request or Suggestion' GitHub Issue Template.`);
         }
@@ -248,9 +260,9 @@ function updateIssueTemplates ( schema: ToolkitSchema ): void {
     }
 
 }
-function updateReadmeFiles ( schema: ToolkitSchema ): void {
+function updateReadmeFiles ( schema: ToolkitSchema, dryRun: boolean ): void {
 
-    const TOOLKIT_README_PATH = "./toolkit/README.md";
+    const TOOLKIT_README_PATH = `${ROOT_PATH}/toolkit/README.md`;
 
     let dependencies: Record<string, string[]> = {};
 
@@ -280,7 +292,7 @@ function updateReadmeFiles ( schema: ToolkitSchema ): void {
             }
         );
 
-        if (!DRY_RUN) {
+        if (!dryRun) {
             writeFileSync(TOOLKIT_README_PATH, readmeContents);
             console.log("[+] Updated Main Toolkit Readme.");
         }
@@ -305,7 +317,7 @@ function updateReadmeFiles ( schema: ToolkitSchema ): void {
 
         try {
             const namespace = schema[namespaceName];
-            const readmePath = `./toolkit/${namespaceName}/README.md`;
+            const readmePath = `${ROOT_PATH}/toolkit/${namespaceName}/README.md`;
             let readmeContents = readFile(readmePath);
             
             readmeContents = readmeContents.replace(
@@ -337,7 +349,7 @@ function updateReadmeFiles ( schema: ToolkitSchema ): void {
                 }
             );
 
-            if (!DRY_RUN) {
+            if (!dryRun) {
                 writeFileSync(TOOLKIT_README_PATH, readmeContents);
                 console.log(`[+] Updated Readme for Namespace '${namespaceName}'.`);
 
@@ -370,7 +382,7 @@ function updateReadmeFiles ( schema: ToolkitSchema ): void {
             
             if (fullToolName in dependencies || (tool.dependencies?.length ?? 0) > 0) {
                 try {
-                    const readmePath = `./toolkit/${fullToolName}/README.md`;
+                    const readmePath = `${ROOT_PATH}/toolkit/${fullToolName}/README.md`;
                     let readmeContents = readFile(readmePath);
                     
                     if (tool.dependencies && tool.dependencies.length > 0) {
@@ -410,7 +422,7 @@ function updateReadmeFiles ( schema: ToolkitSchema ): void {
                         );
                     }
         
-                    if (!DRY_RUN) {
+                    if (!dryRun) {
                         writeFileSync(TOOLKIT_README_PATH, readmeContents);
                         console.log(`[+] Updated Readme for Tool '${fullToolName}'.`);
         
@@ -438,23 +450,152 @@ function updateReadmeFiles ( schema: ToolkitSchema ): void {
 
 (() => {
 
-    if (process.argv.includes('--usage') || process.argv.includes('--help')) {
-        console.log("Usage: process-toolkit-schema [-d | --dry-run]");
-        console.log("                              [--usage | --help]");
-        console.log();
-        console.log("A helper script used to validate and update various project and toolkit files based on the Toolkit Schema (toolkit/schema.json).");
-        console.log();
-        console.log();
-        console.log("Options:");
-        console.log("   -d, --dry-run:     Show what changes would be made");
-        console.log("   --usage, --help:   Show this usage message");
-        return;
+    /** The Command-Line Options passed to the program. */
+    const programArgs = process.argv.slice(2);
+
+    // Check for /?, --usage, or --help in any position
+    for (let i = 0; i < programArgs.length; i++) {
+        if (['/?', '--usage', '--help'].includes(programArgs[i].toLowerCase())) {
+            console.log("Usage: process-toolkit-schema [--dry-run] [--usage | --help]");
+            console.log("                              [[-v | --verify-schema] | [-V | --skip-schema-verification]]");
+            console.log("                              [[-e | --update-package-exports] | [-E | --skip-package-exports]]");
+            console.log("                              [[-i | --update-issue-templates] | [-I | --skip-issue-templates]]");
+            console.log("                              [[-r | --update-readme-files] | [-R | --skip-readme-files]]");
+            console.log("                              [[-d | --update-dependency-imports] | [-D | --skip-dependency-imports]]");
+            console.log();
+            console.log("A helper script used to validate and update various project and toolkit files based on the Toolkit Schema (toolkit/schema.json).");
+            console.log();
+            console.log();
+            console.log("Command-Line Arguments:");
+            console.log();
+            console.log("       --usage, --help:               Show this usage message");
+            console.log("       --dry-run:                     Show what changes would be made");
+            console.log();
+            console.log("   -v, --verify-schema,");
+            console.log("   -V, --skip-schema-verification:    Verify / Skip Verifying the Toolkit Schema");
+            console.log();
+            console.log("   -e, --update-package-exports,");
+            console.log("   -E, --skip-package-exports:        Update / Skip Updating the package.json file");
+            console.log();
+            console.log("   -i, --update-issue-templates,");
+            console.log("   -I, --skip-issue-templates:        Update / Skip Updating GitHub Issue Templates");
+            console.log();
+            console.log("   -r, --update-readme-files,");
+            console.log("   -R, --skip-readme-files:           Update / Skip Updating Readme Files");
+            console.log();
+            console.log("   -d, --update-dependency-imports,");
+            console.log("   -D, --skip-dependency-imports:     Update / Skip Updating Toolkit Dependency Imports");
+            return;
+        }
     }
 
-    const schema = fetchToolkitSchema();
+
+    /* Determine the Program Options and fetch the Toolkit Schema */
+
+    /**
+     * The program options determined by the specified Command-Line Options.
+     */
+    const options: ScriptOptions = (() => {
+
+        let options: ScriptOptions = {
+            dryRun: false,
+            verifySchema: true,
+            updatePackageExports: true,
+            updateIssueTemplates: true,
+            updateReadmeFiles: true,
+            updateDependencyImports: true
+        };
+        let processedDeterminantArg: boolean = false;
+        
+        const isSkipArg = ( arg: string ): boolean => /(?:\-[a-z])|(?:\-{2}skip-)/.test(arg);
+        const cb = (arg) => {
+
+            const lcArg = arg.toLowerCase();
+            let isValidArg: boolean = true;
+
+            switch (lcArg) {
+
+                case '--dry-run':
+                    options.dryRun = true;
+                    break;
+
+                case '-v':
+                case '--verify-schema':
+                case '--skip-schema-verification':
+                    options.verifySchema = (arg == '-v' || lcArg == '--verify-schema');
+                    break;
+
+                case '-e':
+                case '--update-package-exports':
+                case '--skip-package-exports':
+                    options.updatePackageExports = (arg == '-e' || lcArg == '--update-package-exports');
+                    break;
+                
+                case '-i':
+                case '--update-issue-templates':
+                case '--skip-issue-templates':
+                    options.updateIssueTemplates = (arg == '-i' || lcArg == '--update-issue-templates');
+                    break;
+
+                case '-r':
+                case '--update-readme-files':
+                case '--skip-readme-files':
+                    options.updateReadmeFiles = (arg == '-r' || lcArg == '--update-readme-files');
+                    break;
+
+                case '-d':
+                case '--update-dependency-imports':
+                case '--skip-dependency-imports':
+                    options.updateDependencyImports = (arg == '-d' || lcArg == '--update-dependency-imports');
+                    break;
+
+                default:
+                    isValidArg = false;
+                    break;
+
+            }
+
+            if (isValidArg) {
+                if (!processedDeterminantArg && lcArg != '--dry-run') {
+                    processedDeterminantArg = true;
+
+                    if (isSkipArg(arg)) {
+                        options.verifySchema = false;
+                        options.updatePackageExports = false;
+                        options.updateIssueTemplates = false;
+                        options.updateReadmeFiles = false;
+                        options.updateDependencyImports = false;
+                        cb(arg);
+                    }
+                }
+            }
+            else {
+                console.error(`Unrecogized ${/\^-[a-zA-Z]$/.test(arg) ? 'Switch' : 'Option'}: ${arg}`);
+            }
+
+        };
+
+        programArgs.forEach(cb);
+
+        if (!Object.values(options).slice(1).includes(true))
+            console.error("No actions were specified!");
+        
+        return options;
+
+    })();
+    /**
+     * The Parsed TypeScript Toolkit Schema.
+     */
+    const schema: ToolkitSchema = fetchToolkitSchema();
     
-    updatePackageExports(schema);
-    updateIssueTemplates(schema);
-    updateReadmeFiles(schema);
+
+    /* Perform the specified actions */
+
+    if (options.updatePackageExports)
+        updatePackageExports(schema, options.dryRun);
+    if (options.updateIssueTemplates)
+        updateIssueTemplates(schema, options.dryRun);
+    if (options.updateReadmeFiles)
+        updateReadmeFiles(schema, options.dryRun);
 
 })();
