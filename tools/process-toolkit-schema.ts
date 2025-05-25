@@ -654,7 +654,7 @@ const updateReadmeFiles: ScriptActionFunction = (schema, dryRun) => {
 };
 const updateDependencyImports: ScriptActionFunction = (schema, dryRun) => {
 
-    const DEPENDENCY_IMPORT_REGEX = /( *)(?:(?:\/{3} @(bundle|inline)Dependency ([a-zA-Z0-9.]+))|(?:\/\* @(bundle|inline)Dependency ([a-zA-Z0-9.]+) \*\/))/g;
+    const DEPENDENCY_IMPORT_REGEX = /( *)(?:(?:\/{2,} @(bundle|inline)Dependency ([a-zA-Z0-9.]+))|(?:\/\*[^@]* @(bundle|inline)Dependency ([a-zA-Z0-9.]+)[^@]*\*\/))/g;
     const BASE_CODE_REGEX = "\\/\\*{2}(?:[^*]|\\*(?!\\/))+\\*\\/\\s+";
 
     for (const namespaceName in schema) {
