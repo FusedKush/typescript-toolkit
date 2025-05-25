@@ -305,7 +305,7 @@ const updatePackageExports: ScriptActionFunction = (schema, dryRun) => {
         }
 
         if (!dryRun) {
-            writeFileSync(PACKAGE_JSON_PATH, JSON.stringify(packageConfig, null, 2));
+            writeFileSync(PACKAGE_JSON_PATH, `${JSON.stringify(packageConfig, null, 2)}\n`);
             console.log(`[+] Updated package.json.`);
         }
         else {
