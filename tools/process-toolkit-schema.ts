@@ -175,6 +175,7 @@ const ROOT_PATH = "..";
 const readFile = ( filepath: string ): string => readFileSync(filepath, { encoding: 'utf-8' });
 const readJsonFile = <T extends Record<string, any>> ( filepath: JsonFilePath ): T => JSON.parse(readFile(filepath));
 const readYamlFile = <T extends Record<string, any>> ( filepath: YamlFilePath ): T => YAML.parse(readFile(filepath));
+const stringifyYaml = ( data: YAML.Document ): string => data.toString({ lineWidth: 0 });
 
 function fetchToolkitSchema (): ToolkitSchema {
 
@@ -366,10 +367,19 @@ const updateIssueTemplates: ScriptActionFunction = (schema, dryRun) => {
     /* Update Toolkit Tool Issue Report Issue Template */
     
     try {
-        let toolkitToolIssueReport: ToolkitToolIssueReport = readYamlFile(TOOLKIT_TOOL_ISSUE_REPORT_PATH);
-        let toolList = toolkitToolIssueReport.body[2].attributes.options;
+        // let toolkitToolIssueReport: ToolkitToolIssueReport = readYamlFile(TOOLKIT_TOOL_ISSUE_REPORT_PATH);
+        // let toolList = toolkitToolIssueReport.body[2].attributes.options;
+        let yamlDoc = YAML.parseDocument(readFile(TOOLKIT_TOOL_ISSUE_REPORT_PATH));
+        let toolList = (
+            (
+                (
+                    (yamlDoc.get('body') as YAML.YAMLSeq).items[2] as YAML.YAMLMap
+                ).get('attributes') as YAML.YAMLMap
+            ).get('options') as YAML.YAMLSeq
+        ).items as string[];
 
-        toolList = [];
+        (yamlDoc.get('labels') as YAML.YAMLSeq).flow = true;
+        toolList.length = 0;
 
         for (const namespace in schema) {
             const tools = schema[namespace].tools;
@@ -386,12 +396,12 @@ const updateIssueTemplates: ScriptActionFunction = (schema, dryRun) => {
         }
 
         if (!dryRun) {
-            writeFileSync(REQUESTS_AND_SUGGESTIONS_PATH, YAML.stringify(toolkitToolIssueReport));
+            writeFileSync(TOOLKIT_TOOL_ISSUE_REPORT_PATH, stringifyYaml(yamlDoc));
             console.log(`[+] Updated the 'Toolkit Tool Issue Report' GitHub Issue Template.`);
         }
         else {
             console.log(`Updated the 'Toolkit Tool Issue Report' GitHub Issue Template:`);
-            console.log(`\t${YAML.stringify(toolkitToolIssueReport).replaceAll('\n', '\n\t')}`);
+            console.log(`\t${stringifyYaml(yamlDoc).replaceAll('\n', '\n\t')}`);
         }
     }
     catch (error) {
@@ -405,10 +415,20 @@ const updateIssueTemplates: ScriptActionFunction = (schema, dryRun) => {
     /* Update Requests and Suggestions Issue Template */
 
     try {
-        let requestsAndSuggestions: RequestsAndSuggestions = readYamlFile(REQUESTS_AND_SUGGESTIONS_PATH);
-        let toolList = requestsAndSuggestions.body[2].attributes.options;
+        // let requestsAndSuggestions: RequestsAndSuggestions = readYamlFile(REQUESTS_AND_SUGGESTIONS_PATH);
+        // let toolList = requestsAndSuggestions.body[2].attributes.options;
+        let yamlDoc = YAML.parseDocument(readFile(REQUESTS_AND_SUGGESTIONS_PATH));
+        let toolList = (
+            (
+                (
+                    (yamlDoc.get('body') as YAML.YAMLSeq).items[2] as YAML.YAMLMap
+                ).get('attributes') as YAML.YAMLMap
+            ).get('options') as YAML.YAMLSeq
+        ).items as string[];
 
-        toolList = ["Toolkit Namespaces"];
+        (yamlDoc.get('labels') as YAML.YAMLSeq).flow = true;
+        toolList.length = 0;
+        toolList.push("Toolkit Namespaces");
 
         for (const namespace in schema) {
             toolList.push(`  - \`${namespace}\``);
@@ -441,12 +461,12 @@ const updateIssueTemplates: ScriptActionFunction = (schema, dryRun) => {
         );
 
         if (!dryRun) {
-            writeFileSync(REQUESTS_AND_SUGGESTIONS_PATH, YAML.stringify(requestsAndSuggestions));
+            writeFileSync(REQUESTS_AND_SUGGESTIONS_PATH, stringifyYaml(yamlDoc));
             console.log(`[+] Updated the 'Feature Request or Suggestion' GitHub Issue Template.`);
         }
         else {
             console.log(`\nUpdated the 'Feature Request or Suggestion' GitHub Issue Template:`);
-            console.log(`\t${YAML.stringify(requestsAndSuggestions).replaceAll('\n', '\n\t')}`);
+            console.log(`\t${stringifyYaml(yamlDoc).replaceAll('\n', '\n\t')}`);
         }
     }
     catch (error) {
