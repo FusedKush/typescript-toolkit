@@ -231,9 +231,6 @@ const updatePackageExports: ScriptActionFunction = (schema, dryRun) => {
         packageConfig.exports = { ".": "./dist/index.js" };
 
         for (const namespace in schema) {
-            if (namespace.startsWith('$'))
-                continue;
-
             packageConfig['exports'][`./${namespace}`] = getDistFilePath(namespace);
             
             for (const tool in schema[namespace].tools) {
@@ -309,9 +306,6 @@ const updateIssueTemplates: ScriptActionFunction = (schema, dryRun) => {
         toolList = [];
 
         for (const namespace in schema) {
-            if (namespace.startsWith('$'))
-                continue;
-            
             const tools = schema[namespace].tools;
 
             for (const tool in tools) {
@@ -351,18 +345,12 @@ const updateIssueTemplates: ScriptActionFunction = (schema, dryRun) => {
         toolList = ["Toolkit Namespaces"];
 
         for (const namespace in schema) {
-            if (namespace.startsWith('$'))
-                continue;
-
             toolList.push(`  - \`${namespace}\``);
         }
 
         toolList.push('Toolkit Tools');
 
         for (const namespace in schema) {
-            if (namespace.startsWith('$'))
-                continue;
-            
             const tools = schema[namespace].tools;
 
             for (const tool in tools) {
@@ -422,9 +410,6 @@ const updateReadmeFiles: ScriptActionFunction = (schema, dryRun) => {
                 let namespaces = p1;
 
                 for (const namespaceName in schema) {
-                    if (namespaceName.startsWith('$'))
-                        continue;
-
                     const namespace = schema[namespaceName];
 
                     namespaces += `\n- [\`${namespaceName}\`](${namespaceName}): ${namespace.markdownDescription ?? namespace.description}`;
@@ -455,9 +440,6 @@ const updateReadmeFiles: ScriptActionFunction = (schema, dryRun) => {
     /* Update Toolkit Namespace Readme Files */
 
     for (const namespaceName in schema) {
-        if (namespaceName.startsWith('$'))
-            continue;
-
         try {
             const namespace = schema[namespaceName];
             const readmePath = `${ROOT_PATH}/toolkit/${namespaceName}/README.md`;
@@ -514,9 +496,6 @@ const updateReadmeFiles: ScriptActionFunction = (schema, dryRun) => {
     /* Update Toolkit Tool Readme Files */
 
     for (const namespaceName in schema) {
-        if (namespaceName.startsWith('$'))
-            continue;
-
         const namespace = schema[namespaceName];
 
         for (const toolName in namespace.tools) {
