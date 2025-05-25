@@ -16,7 +16,7 @@ body:
       label: Search Terms
       description: |
         Please list all of the search terms you used when searching through the existing suggestions.
-        
+
         This will help others looking for the same feature or enhancement find your request easier.
       placeholder: |
         add x to y,
@@ -61,7 +61,7 @@ body:
       label: Feature Request or Suggestion
       description: |
         Please describe your desired feature, change, or enhancement to the TypeScript Toolkit.
-      
+
         Please include as much information as possible in your request to help with understanding and potentially implementing the suggestion, including:
         - What the feature, change, or enhancement should accomplishment
         - Why the feature, change, or enchancement is useful/necessary for client code

@@ -16,7 +16,7 @@ body:
       label: Search Terms
       description: |
         Please list all of the search terms you used when searching through the existing issues.
-        
+
         This will help others with the same problem find your issue easier.
       placeholder: |
         project readme out of date,
@@ -46,7 +46,7 @@ body:
       label: Description of Issue
       description: |
         Please describe the bug, issue, or problem you have been experiencing.
-      
+
         Please include as much information as possible in your report to help with understanding and resolving the issue, including:
         - The nature of the issue
         - How the issue affects client code
