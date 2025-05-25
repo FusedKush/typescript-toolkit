@@ -175,7 +175,7 @@ const ROOT_PATH = "..";
 const readFile = ( filepath: string ): string => readFileSync(filepath, { encoding: 'utf-8' });
 const readJsonFile = <T extends Record<string, any>> ( filepath: JsonFilePath ): T => JSON.parse(readFile(filepath));
 const readYamlFile = <T extends Record<string, any>> ( filepath: YamlFilePath ): T => YAML.parse(readFile(filepath));
-const stringifyYaml = ( data: YAML.Document ): string => data.toString({ lineWidth: 0 });
+const stringifyYaml = ( data: YAML.Document ): string => data.toString({ flowCollectionPadding: false, lineWidth: 0 });
 
 function fetchToolkitSchema (): ToolkitSchema {
 
