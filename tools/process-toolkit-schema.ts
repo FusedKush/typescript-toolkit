@@ -532,7 +532,7 @@ const updateReadmeFiles: ScriptActionFunction = (schema, dryRun) => {
             let readmeContents = readFile(readmePath);
             
             readmeContents = readmeContents.replace(
-                new RegExp('(## Tool List)[^#]+', 'm'),
+                new RegExp('(## Tool List)(?:[^#]|#(?![# ]+))+', 'm'),
                 (match, p1) => {
 
                     let toolList = p1;
@@ -555,7 +555,7 @@ const updateReadmeFiles: ScriptActionFunction = (schema, dryRun) => {
                         }
                     }
 
-                    return toolList;
+                    return `${toolList}\n\n\n`;
 
                 }
             );
@@ -624,7 +624,7 @@ const updateReadmeFiles: ScriptActionFunction = (schema, dryRun) => {
 
                                 });
             
-                                return `${dependentList}\n\n`;
+                                return `${dependentList}\n\n\n`;
             
                             }
                         );
