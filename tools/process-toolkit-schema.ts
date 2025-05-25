@@ -1,4 +1,4 @@
-import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import YAML from "yaml";
 
@@ -95,6 +95,72 @@ namespace SchemaValidationError {
     }
 
     export interface ErrorOptions extends globalThis.ErrorOptions, ValidationDetails {}
+
+}
+
+enum DependencyType {
+
+    BUNDLED = 'Bundled',
+    INLINED = 'Inlined'
+
+};
+class DependencyImportError extends Error implements DependencyImportError.ImportDetails {
+
+    readonly fileName?: string;
+    readonly filePath?: string;
+        
+    readonly dependency?: string;
+    readonly dependencyType?: DependencyType;
+    readonly dependencyNamespace?: string;
+    readonly dependencyTool?: string;
+    readonly dependencyExport?: string;
+
+
+    constructor ( message?: string | null, options?: DependencyImportError.ErrorOptions ) {
+
+        super(
+            message ?? (
+                `Failed to import${options?.dependencyType ? ` ${options.dependencyType}` : ''} TypeScript Toolkit Dependency`
+                    + (
+                        ((options?.fileName || options?.filePath) && options?.dependency)
+                            ? `'${options.dependency}' in file ${options.fileName ?? options.filePath}.`
+                            : '.'
+                    )
+            ),
+            options
+        );
+
+        if (options) {
+            this.fileName = options.fileName;
+            this.dependency = options.dependency;
+            this.dependencyType = options.dependencyType;
+            this.dependencyNamespace = options.dependencyNamespace;
+            this.dependencyTool = options.dependencyTool;
+            this.dependencyExport = options.dependencyExport;
+            
+            if (options.filePath)
+                this.filePath = path.resolve('./', options.filePath);
+        }
+    
+    }
+
+}
+namespace DependencyImportError {
+
+    export interface ImportDetails {
+
+        fileName?: string;
+        filePath?: string;
+        
+        dependency?: string;
+        dependencyType?: DependencyType;
+        dependencyNamespace?: string;
+        dependencyTool?: string;
+        dependencyExport?: string;
+
+    }
+
+    export interface ErrorOptions extends globalThis.ErrorOptions, ImportDetails {}
 
 }
 
@@ -565,7 +631,215 @@ const updateReadmeFiles: ScriptActionFunction = (schema, dryRun) => {
         
     }
 
-}
+};
+const updateDependencyImports: ScriptActionFunction = (schema, dryRun) => {
+
+    const DEPENDENCY_IMPORT_REGEX = /( *)(?:(?:\/{3} @(bundle|inline)Dependency ([a-zA-Z0-9.]+))|(?:\/\* @(bundle|inline)Dependency ([a-zA-Z0-9.]+) \*\/))/g;
+    const BASE_CODE_REGEX = "\\/\\*{2}(?:[^*]|\\*(?!\\/))+\\*\\/\\s+";
+
+    for (const namespaceName in schema) {
+        const namespace = schema[namespaceName];
+
+        for (const toolName in namespace.tools) {
+            const tool = namespace.tools[toolName];
+            const fullToolName = `${namespaceName}/${toolName}`;
+
+            if (tool.dependencies && tool.dependencies.length > 0) {
+                (['ts', 'js'] as const).forEach((scriptType) => {
+
+                    const scriptsPath = `${ROOT_PATH}/toolkit/${fullToolName}/${scriptType}`;
+                    const srcPath = `${scriptsPath}/src`;
+    
+                    if (existsSync(srcPath)) {
+                        const files = readdirSync(srcPath, { withFileTypes: true });
+    
+                        files.forEach((file) => {
+
+                            if (file.isFile()) {
+                                let filePath = `${srcPath}/${file.name}`;
+                                let fileContents = readFile(filePath);
+                                    
+                                fileContents = fileContents.replaceAll(
+                                    DEPENDENCY_IMPORT_REGEX,
+                                    (match, p1, p2, p3, p4, p5) => {
+
+                                        let branch: 'left' | 'right' = (p2 === undefined ? 'right' : 'left');
+                                        let indent: string = p1;
+                                        let depTag: 'bundle' | 'inline' = (branch == 'left' ? p2 : p4);
+                                        let depType: DependencyType = (depTag == 'bundle' ? DependencyType.BUNDLED : DependencyType.INLINED);
+                                        let dependency: string = (branch == 'left' ? p3 : p5);
+                                        let segments: string[] = dependency.split('.');
+                                        let baseErrorOptions: DependencyImportError.ErrorOptions = {
+                                            fileName: file.name,
+                                            filePath: filePath,
+                                            dependency: dependency,
+                                            dependencyType: depType
+                                        };
+
+                                        if (segments.length != 3) {
+                                            throw new DependencyImportError(
+                                                `An invalid ${depType} Dependency was specified in ${file.name}: ${dependency}`,
+                                                baseErrorOptions
+                                            );
+                                        }
+
+                                        if (segments[0] in schema) {
+                                            const depNamespace = schema[segments[0]];
+
+                                            if (segments[1] in depNamespace.tools) {
+                                                const depTool = depNamespace.tools[segments[1]];
+
+                                                if (segments[2] in depTool.exports) {
+                                                    const depExport = depTool.exports[segments[2]];
+
+                                                    if (depExport.type != 'global') {
+                                                        const codeRegex: RegExp = (() => {
+
+                                                            switch (depExport.type) {
+
+                                                                case 'type':
+                                                                    return new RegExp(
+                                                                        scriptType == 'ts'
+                                                                            ? `${BASE_CODE_REGEX}type ${segments[2]}[^=]+=.+?(?:(?:;|\n(?=\n))|$)`
+                                                                            : `(?:\\/{2} ${segments[2]}\s+)?\\/\\*{2}(?:[^*]|\\*(?!\\/))+\\@typedef {.+?} ${segments[2]}(?:[^*]|\\*(?!\\/))+\\*\\/`,
+                                                                        's'
+                                                                    );
+
+                                                                case 'function':
+                                                                    return new RegExp(`${BASE_CODE_REGEX}(?:function|const|var|let) ${segments[2]}[^{]+{(?:[^{}]|{.+})+}`, 's');
+                                                                
+                                                                case 'constant':
+                                                                    return new RegExp(`${BASE_CODE_REGEX}const ${segments[2]}[^=]+=.+?(?:(?:;|\n(?=\n))|$`, 's');
+                                                                
+                                                                case 'variable':
+                                                                    return new RegExp(`${BASE_CODE_REGEX}(?:const|var|let) ${segments[2]}[^=]+=.+?(?:(?:;|\n(?=\n))|$`, 's');
+                                                            
+                                                                }
+
+                                                        })();
+                                                        const depToolDirPath = `${ROOT_PATH}/toolkit/${segments[0]}/${segments[1]}/${scriptType}`;
+                                                        const depToolFilePath: string = (() => {
+
+                                                            if (existsSync(depToolDirPath)) {
+                                                                if (existsSync(`${depToolDirPath}/${file.name}`))
+                                                                    return `${depToolDirPath}/${file.name}`;
+                                                                else if (existsSync(`${depToolDirPath}/${depTag == 'bundle' ? 'bundled' : 'inlined'}-deps.${scriptType}`))
+                                                                    return `${depToolDirPath}/${depTag == 'bundle' ? 'bundled' : 'inlined'}-deps.${scriptType}`;
+                                                                else if (existsSync(`${depToolDirPath}/index.${scriptType}`))
+                                                                    return `${depToolDirPath}/index.${scriptType}`;
+                                                                else
+                                                                    throw new DependencyImportError(
+                                                                        `Failed to import '${segments[2]}' from Tool '${segments[1]}' in Namespace '${segments[0]}' as a ${depType} Dependency in ${file.name}: A suitable source code file could not be found.`,
+                                                                        Object.assign({}, baseErrorOptions, {
+                                                                            dependencyNamespace: segments[0],
+                                                                            dependencyTool: segments[1],
+                                                                            dependencyExport: segments[2]
+                                                                        } as DependencyImportError.ErrorOptions)
+                                                                    );
+                                                            }
+                                                            else {
+                                                                throw new DependencyImportError(
+                                                                    `Failed to import '${segments[2]}' from Tool '${segments[1]}' in Namespace '${segments[0]}' as a ${depType} Dependency in ${file.name}: ${depToolDirPath} could not be found.`,
+                                                                    Object.assign({}, baseErrorOptions, {
+                                                                        dependencyNamespace: segments[0],
+                                                                        dependencyTool: segments[1],
+                                                                        dependencyExport: segments[2]
+                                                                    } as DependencyImportError.ErrorOptions)
+                                                                );
+                                                            }
+
+                                                        })();
+                                                        const depToolFileContents = readFile(depToolFilePath);
+                                                        const depExportContents = depToolFileContents.match(codeRegex);
+                                                        
+                                                        if (depExportContents) {
+                                                            let replacementString = indent + depExportContents[0].replaceAll('\n', `\n${indent}`);
+    
+                                                            if (depType == DependencyType.BUNDLED) {
+                                                                if (!replacementString.endsWith('\n'))
+                                                                    replacementString += '\n';
+                                                            }
+                                                            else {
+                                                                replacementString = `${indent}// Inlined TypeScript Toolkit Dependency\n${replacementString}`;
+                                                            }
+    
+                                                            return replacementString;
+                                                        }
+                                                        else {
+                                                            throw new DependencyImportError(
+                                                                `Cannot import '${segments[2]}' from Tool '${segments[1]}' in Namespace '${segments[0]}' as a ${depType} Dependency in ${file.name}: Failed to find '${segments[2]}' in source code file ${depToolFilePath}.`,
+                                                                Object.assign({}, baseErrorOptions, {
+                                                                    dependencyNamespace: segments[0],
+                                                                    dependencyTool: segments[1],
+                                                                    dependencyExport: segments[2]
+                                                                } as DependencyImportError.ErrorOptions)
+                                                            );
+                                                        }
+                                                    }
+                                                    else {
+                                                        throw new DependencyImportError(
+                                                            `Cannot import '${segments[2]}' from Tool '${segments[1]}' in Namespace '${segments[0]}' as a ${depType} Dependency in ${file.name}: '${segments[2]}' is a global that should not need to be imported.`,
+                                                            Object.assign({}, baseErrorOptions, {
+                                                                dependencyNamespace: segments[0],
+                                                                dependencyTool: segments[1],
+                                                                dependencyExport: segments[2]
+                                                            } as DependencyImportError.ErrorOptions)
+                                                        );
+                                                    }
+
+                                                }
+                                                else {
+                                                    throw new DependencyImportError(
+                                                        `Unknown Export '${segments[2]}' from Tool '${segments[1]}' in Namespace '${segments[0]}' specified as a ${depType} Dependency in ${file.name}.`,
+                                                        Object.assign({}, baseErrorOptions, {
+                                                            dependencyNamespace: segments[0],
+                                                            dependencyTool: segments[1],
+                                                            dependencyExport: segments[2]
+                                                        } as DependencyImportError.ErrorOptions)
+                                                    );
+                                                }
+                                            }
+                                            else {
+                                                throw new DependencyImportError(
+                                                    `Unknown Tool '${segments[1]}' in Namespace '${segments[0]}' specified as a ${depType} Dependency in ${file.name}.`,
+                                                    Object.assign({}, baseErrorOptions, {
+                                                        dependencyNamespace: segments[0],
+                                                        dependencyTool: segments[1]
+                                                    } as DependencyImportError.ErrorOptions)
+                                                );
+                                            }
+                                        }
+                                        else {
+                                            throw new DependencyImportError(
+                                                `Unknown Namespace '${segments[0]}' specified as a ${depType} Dependency in ${file.name}.`,
+                                                Object.assign({}, baseErrorOptions, {
+                                                    dependencyNamespace: segments[0]
+                                                } as DependencyImportError.ErrorOptions)
+                                            );
+                                        }
+
+                                    }
+                                );
+
+                                if (!dryRun) {
+                                    writeFileSync(`${scriptsPath}/${file.name}`, fileContents);
+                                    console.log(`[+] Processed Bundled and Inlined Dependencies for file ${fullToolName}/${scriptType}/${file.name}.`);
+                                }
+                                else {
+                                    console.log(`\nProcessed Bundled and Inlined Dependencies for file ${fullToolName}/${scriptType}/${file.name}:`);
+                                    console.log(`\t${fileContents.replaceAll('\n', '\n\t')}`);
+                                }
+                            }
+
+                        });
+                    }
+
+                });
+            }
+        }
+    }
+
+};
 
 
 /* Main Script */
