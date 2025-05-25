@@ -19,10 +19,12 @@
             },
             "toListString": {
                 "description": "Convert the specified array to a string containing a list of the elements in the array.",
+                "markdownDescription": "Convert the specified array to a `string` containing a list of the elements in the array.",
                 "exports": {
                     "toListString": {
                         "type": "function",
-                        "description": "Convert the specified array to a string containing a list of the elements in the array."
+                        "description": "Convert the specified array to a string containing a list of the elements in the array.",
+                        "markdownDescription": "Convert the specified array to a `string` containing a list of the elements in the array."
                     }
                 }
             }
