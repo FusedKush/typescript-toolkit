@@ -561,7 +561,7 @@ const updateReadmeFiles: ScriptActionFunction = (schema, dryRun) => {
             );
 
             if (!dryRun) {
-                writeFileSync(TOOLKIT_README_PATH, readmeContents);
+                writeFileSync(readmePath, readmeContents);
                 console.log(`[+] Updated Readme for Namespace '${namespaceName}'.`);
 
             }
@@ -631,7 +631,7 @@ const updateReadmeFiles: ScriptActionFunction = (schema, dryRun) => {
                     }
         
                     if (!dryRun) {
-                        writeFileSync(TOOLKIT_README_PATH, readmeContents);
+                        writeFileSync(readmePath, readmeContents);
                         console.log(`[+] Updated Readme for Tool '${fullToolName}'.`);
         
                     }
