@@ -36,16 +36,21 @@ body:
         - "  - `arrays`"
         - "  - `types`"
         - Toolkit Tools
-        - "  - `arrays/ArrayifyType`"
-        - "  - `arrays/arrayify()`"
-        - "  - `arrays/toListString()`"
-        - "  - `types/BaseType`"
-        - "  - `types/BaseTypeString`"
-        - "  - `types/getBaseType()`"
-        - "  - `types/isBaseType()`"
-        - "  - `types/assertBaseType()`"
-        - "  - `types/IsAny`"
-        - "  - `types/UnionToIntersection`"
+        - "  - `arrays/arrayify`"
+        - "    + `arrays/ArrayifyType`"
+        - "    + `arrays/arrayify()`"
+        - "  - `arrays/toListString`"
+        - "    + `arrays/toListString()`"
+        - "  - `types/baseTypes`"
+        - "    + `types/BaseType`"
+        - "    + `types/BaseTypeString`"
+        - "    + `types/getBaseType()`"
+        - "    + `types/isBaseType()`"
+        - "    + `types/assertBaseType()`"
+        - "  - `types/isAny`"
+        - "    + `types/IsAny`"
+        - "  - `types/unionToIntersection`"
+        - "    + `types/UnionToIntersection`"
         - Project Documentation
         - API Documentation Wiki
         - Project Layout, Organization, or Architecture
@@ -67,6 +72,6 @@ body:
         - Why the feature, change, or enchancement is useful/necessary for client code
         - Any potential consequences or downsides of the feature, change, or enhancement, for the project or for client code.
         - Instructions for implementing the feature, change, or enhancement, if applicable.
-      placeholder: I was doing ... using ... with the intention of ... and then ... happened. 
+      placeholder: I was doing ... using ... with the intention of ... and then ... happened.
     validations:
       required: true

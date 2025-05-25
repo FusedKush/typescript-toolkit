@@ -32,9 +32,21 @@ body:
       description: Select all of the Tools in the TypeScript Toolkit that this issue applies to.
       multiple: true
       options:
-        - "`arrays/ArrayifyType`"
-        - "`arrays/arrayify()`"
-        - "`arrays/toListString()`"
+        - "`arrays/arrayify`"
+        - "  - `arrays/ArrayifyType`"
+        - "  - `arrays/arrayify()`"
+        - "`arrays/toListString`"
+        - "  - `arrays/toListString()`"
+        - "`types/baseTypes`"
+        - "  - `types/BaseType`"
+        - "  - `types/BaseTypeString`"
+        - "  - `types/getBaseType()`"
+        - "  - `types/isBaseType()`"
+        - "  - `types/assertBaseType()`"
+        - "`types/isAny`"
+        - "  - `types/IsAny`"
+        - "`types/unionToIntersection`"
+        - "  - `types/UnionToIntersection`"
     validations:
       required: true
   - type: dropdown
@@ -63,6 +75,6 @@ body:
         - The affected source file(s), branch(es), and/or tag(s)
         - Any special files or configuration required for the issue to appear
         - Instructions to reproduce the issue
-      placeholder: I was doing ... using ... with the intention of ... and then ... happened. 
+      placeholder: I was doing ... using ... with the intention of ... and then ... happened.
     validations:
       required: true

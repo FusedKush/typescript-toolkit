@@ -42,6 +42,6 @@ body:
         - The affected source file(s), branch(es), and/or tag(s)
         - Any special files or configuration required for the issue to appear
         - Instructions to reproduce the issue
-      placeholder: I was doing ... using ... with the intention of ... and then ... happened. 
+      placeholder: I was doing ... using ... with the intention of ... and then ... happened.
     validations:
       required: true
