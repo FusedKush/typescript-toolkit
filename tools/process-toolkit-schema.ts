@@ -9,6 +9,8 @@ type JsonFilePath = `${string}.json${'' | 'c'}`;
 type YamlFilePath = `${string}.y${'a' | ''}ml`;
 
 type ToolkitExportType = 'type' | 'function' | 'constant' | 'variable' | 'global';
+type ScriptActionFunction = ( schema: ToolkitSchema, dryRun: boolean ) => void;
+
 interface ToolkitSchema {
     [Namespace: string]: {
         description?: string;
@@ -41,6 +43,7 @@ interface ScriptOptions {
     updateDependencyImports: boolean;
 
 };
+type ScriptActionOptions = Omit<ScriptOptions, 'dryRun'>;
 
 class SchemaValidationError extends Error implements SchemaValidationError.ValidationDetails {
 
@@ -130,7 +133,7 @@ function fetchToolkitSchema (): ToolkitSchema {
 
 }
 
-function verifySchema ( schema: ToolkitSchema, dryRun: boolean ): void {
+const verifySchema: ScriptActionFunction = (schema, dryRun) => {
 
     try {
         for (const namespaceName in schema) {
@@ -207,8 +210,8 @@ function verifySchema ( schema: ToolkitSchema, dryRun: boolean ): void {
         }
     }
 
-}
-function updatePackageExports ( schema: ToolkitSchema, dryRun: boolean ): void {
+};
+const updatePackageExports: ScriptActionFunction = (schema, dryRun) => {
 
     interface PackageConfig {
         [x: string]: any;
@@ -254,8 +257,8 @@ function updatePackageExports ( schema: ToolkitSchema, dryRun: boolean ): void {
         );
     }
 
-}
-function updateIssueTemplates ( schema: ToolkitSchema, dryRun: boolean ): void {
+};
+const updateIssueTemplates: ScriptActionFunction = (schema, dryRun) => {
 
     interface ToolkitToolIssueReport {
         [x: string]: any;
@@ -399,8 +402,8 @@ function updateIssueTemplates ( schema: ToolkitSchema, dryRun: boolean ): void {
         );
     }
 
-}
-function updateReadmeFiles ( schema: ToolkitSchema, dryRun: boolean ): void {
+};
+const updateReadmeFiles: ScriptActionFunction = (schema, dryRun) => {
 
     const TOOLKIT_README_PATH = `${ROOT_PATH}/toolkit/README.md`;
 
@@ -590,6 +593,14 @@ function updateReadmeFiles ( schema: ToolkitSchema, dryRun: boolean ): void {
 
 (() => {
 
+    const ACTIONS_MAP = {
+        verifySchema: verifySchema,
+        updatePackageExports: updatePackageExports,
+        updateIssueTemplates: updateIssueTemplates,
+        updateReadmeFiles: updateReadmeFiles,
+        updateDependencyImports: updateDependencyImports
+    } as const satisfies Record<keyof ScriptActionOptions, ScriptActionFunction>;
+
     /** The Command-Line Options passed to the program. */
     const programArgs = process.argv.slice(2);
 
@@ -716,9 +727,6 @@ function updateReadmeFiles ( schema: ToolkitSchema, dryRun: boolean ): void {
         };
 
         programArgs.forEach(cb);
-
-        if (!Object.values(options).slice(1).includes(true))
-            console.error("No actions were specified!");
         
         return options;
 
@@ -727,17 +735,19 @@ function updateReadmeFiles ( schema: ToolkitSchema, dryRun: boolean ): void {
      * The Parsed TypeScript Toolkit Schema.
      */
     const schema: ToolkitSchema = fetchToolkitSchema();
+    let actionsPerformed: number = 0;
     
 
     /* Perform the specified actions */
 
-    if (options.verifySchema)
-        verifySchema(schema, options.dryRun);
-    if (options.updatePackageExports)
-        updatePackageExports(schema, options.dryRun);
-    if (options.updateIssueTemplates)
-        updateIssueTemplates(schema, options.dryRun);
-    if (options.updateReadmeFiles)
-        updateReadmeFiles(schema, options.dryRun);
+    for (const action in ACTIONS_MAP) {
+        if (options[action]) {
+            ACTIONS_MAP[action as keyof typeof ACTIONS_MAP](schema, options.dryRun);
+            actionsPerformed++;
+        }
+    }
+
+    if (actionsPerformed == 0)
+        console.error("No actions were performed!");
 
 })();
