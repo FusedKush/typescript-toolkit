@@ -678,6 +678,7 @@ const updateDependencyImports: ScriptActionFunction = (schema, dryRun) => {
                             if (file.isFile()) {
                                 let filePath = `${srcPath}/${file.name}`;
                                 let fileContents = readFile(filePath);
+                                let firstMatch: boolean = true;
                                     
                                 fileContents = fileContents.replaceAll(
                                     DEPENDENCY_IMPORT_REGEX,
@@ -721,7 +722,7 @@ const updateDependencyImports: ScriptActionFunction = (schema, dryRun) => {
                                                                     return new RegExp(
                                                                         scriptType == 'ts'
                                                                             ? `${BASE_CODE_REGEX}type ${segments[2]}[^=]+=.+?(?:(?:;|\n(?=\n))|$)`
-                                                                            : `(?:\\/{2} ${segments[2]}\s+)?\\/\\*{2}(?:[^*]|\\*(?!\\/))+\\@typedef {.+?} ${segments[2]}(?:[^*]|\\*(?!\\/))+\\*\\/`,
+                                                                            : `(?:\\/{2} ${segments[2]}\\s+)?\\/\\*{2}(?:[^*]|\\*(?!\\/))+\\@typedef {.+?} ${segments[2]}(?:[^*]|\\*(?!\\/))+\\*\\/`,
                                                                         's'
                                                                     );
 
@@ -771,18 +772,32 @@ const updateDependencyImports: ScriptActionFunction = (schema, dryRun) => {
                                                         })();
                                                         const depToolFileContents = readFile(depToolFilePath);
                                                         const depExportContents = depToolFileContents.match(codeRegex);
-                                                        
+
                                                         if (depExportContents) {
-                                                            let replacementString = indent + depExportContents[0].replaceAll('\n', `\n${indent}`);
-    
+                                                            let replacementString = "";
+
                                                             if (depType == DependencyType.BUNDLED) {
-                                                                if (!replacementString.endsWith('\n'))
+                                                                if (!firstMatch) {
                                                                     replacementString += '\n';
+                                                                }
                                                             }
                                                             else {
-                                                                replacementString = `${indent}// Inlined TypeScript Toolkit Dependency\n${replacementString}`;
+                                                                replacementString += `${indent}// Inlined TypeScript Toolkit Dependency\n`;
                                                             }
+                                                            
+                                                            replacementString += depExportContents[0].replaceAll(/^(?!$)/gm, `${indent}`);
+
+                                                            // let replacementString = indent + depExportContents[0].replaceAll('\n', `\n${indent}`);
     
+                                                            // if (depType == DependencyType.BUNDLED) {
+                                                            //     if (!replacementString.endsWith('\n'))
+                                                            //         replacementString += '\n';
+                                                            // }
+                                                            // else {
+                                                            //     replacementString = `${indent}// Inlined TypeScript Toolkit Dependency\n${replacementString}`;
+                                                            // }
+    
+                                                            firstMatch = false;
                                                             return replacementString;
                                                         }
                                                         else {
