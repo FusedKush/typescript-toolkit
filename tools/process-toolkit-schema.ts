@@ -9,9 +9,17 @@
  * @author Zach Vaughan (FusedKush)
  */
 
-import { copyFileSync, existsSync, mkdtempSync, readdirSync, readFileSync, renameSync, rmSync, writeFileSync } from "node:fs";
+import {
+    copyFileSync,
+    existsSync,
+    mkdtempSync,
+    readdirSync,
+    readFileSync,
+    rmSync,
+    writeFileSync
+} from "node:fs";
 import { tmpdir } from "node:os";
-import path from "node:path";
+import Path from "node:path";
 import YAML from "yaml";
 
 
@@ -480,7 +488,7 @@ class DependencyImportError extends Error implements DependencyImportError.Impor
             this.dependencyExport = options.dependencyExport;
             
             if (options.filePath)
-                this.filePath = path.resolve('./', options.filePath);
+                this.filePath = prettyPath(options.filePath);
         }
     
     }
@@ -630,6 +638,15 @@ var changes: Record<string, string> = {};
  * @returns         A `string` containing the indented `output`.
  */
 const indentOutput = ( output: string ): string => output.replaceAll(/^/gm, '\t');
+/**
+ * Make the specified `path` pretty
+ * and relative to the Project Root.
+ * 
+ * @param path  The path being prettified.
+ * 
+ * @returns     The pretty `path`.
+ */
+const prettyPath = ( path: string ): string => Path.relative("../", Path.resolve(path));
 
 /**
  * Retrieve the {@link ToolkitSchema} from the
@@ -748,7 +765,7 @@ const stringifyYaml = ( data: YAML.Document ): string => data.toString({ flowCol
 function recordChanges ( file: string, modifiedContents: string ) {
 
     if (file in changes)
-        throw new Error(`Conflicting changes have already been recorded for ${file}!`);
+        throw new Error(`Conflicting changes have already been recorded for ${prettyPath(file)}!`);
 
     changes[file] = modifiedContents;
 
@@ -768,25 +785,24 @@ function recordChanges ( file: string, modifiedContents: string ) {
  */
 function commitChanges () {
 
-    var tempFileDir: string = mkdtempSync(path.join(tmpdir(), 'typescript-toolkit-'));
+    var tempFileDir: string = mkdtempSync(Path.join(tmpdir(), 'typescript-toolkit-'));
 
     for (let file in changes) {
         const modifiedContents = changes[file];
-        const fullFilePath = path.relative("../", path.resolve(file));
 
         try {
-            const tempfileName = `${tempFileDir}${path.sep}${path.basename(file)}`;
+            const tempfileName = `${tempFileDir}${Path.sep}${Path.basename(file)}`;
 
             // Write the modified contents to a temporary file before
             // replacing the existing file with the new one.
             writeFileSync(tempfileName, modifiedContents, { encoding: 'utf-8' });
             copyFileSync(tempfileName, file);
             rmSync(tempfileName);
-            console.log(`[+] Successfully updated file ${fullFilePath}.`);
+            console.log(`[+] Successfully updated file ${prettyPath(file)}.`);
         }
         catch (error) {
             throw new Error(
-                `Failed to commit changes to file ${fullFilePath}: ${(error as Error).message}`,
+                `Failed to commit changes to file ${prettyPath(file)}: ${(error as Error).message}`,
                 { cause: error }
             );
         }
@@ -812,7 +828,7 @@ function commitChanges () {
 function printChanges () {
 
     for (let file in changes) {
-        console.log(`\nChanges to be made to file ${path.relative("../", path.resolve(file))}:`);
+        console.log(`\nChanges to be made to file ${prettyPath(file)}:`);
         console.log(indentOutput(changes[file]));
     }
 
@@ -1261,7 +1277,7 @@ const updateReadmeFiles: ScriptActionFunction = (schema) => {
                                 let dependencyList = p1;
     
                                 (tool.dependencies as string[]).forEach((dependency) => (
-                                    dependencyList += `\n  - [\`${dependency}\`](${path.posix.relative(`toolkit/${fullToolName}`, `toolkit/${dependency}`)})`
+                                    dependencyList += `\n  - [\`${dependency}\`](${Path.posix.relative(`toolkit/${fullToolName}`, `toolkit/${dependency}`)})`
                                 ));
             
                                 return dependencyList;
@@ -1277,7 +1293,7 @@ const updateReadmeFiles: ScriptActionFunction = (schema) => {
                                 let dependentList = p1;
 
                                 dependencies[fullToolName].forEach((dependent) => (
-                                    dependentList += `\n  - [\`${dependent}\`](${path.posix.relative(`toolkit/${fullToolName}`, `toolkit/${dependent}`)})`
+                                    dependentList += `\n  - [\`${dependent}\`](${Path.posix.relative(`toolkit/${fullToolName}`, `toolkit/${dependent}`)})`
                                 ));
             
                                 return `${dependentList}\n\n\n`;
