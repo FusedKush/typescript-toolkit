@@ -56,7 +56,7 @@
                                                     "title": "Exported Member Type",
                                                     "description": "The type of the exported member.",
                                                     "required": "true",
-                                                    "enum": ["type", "function", "constant", "variable", "global"]
+                                                    "enum": ["type", "interface", "class", "function", "constant", "variable", "global"]
                                                 },
                                                 "description": {
                                                     "title": "Exported Member Description",

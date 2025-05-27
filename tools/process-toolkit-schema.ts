@@ -42,6 +42,40 @@ enum ToolkitExportType {
      */
     TYPE = 'type',
     /**
+     * An *Interface Definition*.
+     * 
+     * In *TypeScript Files*, these are denoted by
+     * the `interface` or `type` keywords, while in *JavaScript* Files,
+     * they are instead denoted by the `@interface` or `@typedef` tags.
+     * 
+     * @example
+     * ```ts
+     * interface MyInterface {
+     *    isTheAnswer ( x: string | number ): boolean;
+     * }
+     * ```
+     * 
+     * @see {@link TYPE}
+     * @see {@link CLASS}
+     */
+    INTERFACE = 'interface',
+    /**
+     * A custom class definition.
+     * 
+     * Classes are denoted by the `class` keyword.
+     * 
+     * @example
+     * ```ts
+     * class MyClass {
+     *    constructor ();
+     *    isTheAnswer ( x: string | number ): boolean;
+     * }
+     * ```
+     * 
+     * @see {@link INTERFACE}
+     */
+    CLASS = 'class',
+    /**
      * A custom function.
      * 
      * Functions may be denoted by the `function` keyword:
@@ -1411,6 +1445,17 @@ const updateDependencyImports: ScriptActionFunction = (schema) => {
                                                                             : `(?:\\/{2} ${segments[2]}\\s+)?\\/\\*{2}(?:[^*]|\\*(?!\\/))+\\@typedef {.+?} ${segments[2]}(?:[^*]|\\*(?!\\/))+\\*\\/`,
                                                                         's'
                                                                     );
+
+                                                                case ToolkitExportType.INTERFACE:
+                                                                    return new RegExp(
+                                                                        scriptType == 'ts'
+                                                                            ? `${CODE_SNIPPET_DOCBLOCK_REGEX}(?:interface|type) ${segments[2]}[^{]+{(?:[^{}]|{.+})+}`
+                                                                            : `(?:\\/{2} ${segments[2]}\\s+)?\\/\\*{2}(?:[^*]|\\*(?!\\/))+\\@typedef {.+?} ${segments[2]}(?:[^*]|\\*(?!\\/))+\\*\\/`,
+                                                                        's'
+                                                                    );
+
+                                                                case ToolkitExportType.CLASS:
+                                                                    return new RegExp(`${CODE_SNIPPET_DOCBLOCK_REGEX}class ${segments[2]}[^{]+{(?:[^{}]|{.+})+}`, 's');
 
                                                                 case ToolkitExportType.FUNCTION:
                                                                     return new RegExp(`${CODE_SNIPPET_DOCBLOCK_REGEX}(?:function|const|var|let) ${segments[2]}[^{]+{(?:[^{}]|{.+})+}`, 's');
