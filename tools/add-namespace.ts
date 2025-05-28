@@ -1,29 +1,64 @@
 /*
- * Add a new Namespace to the TypeScript Toolkit.
+ * An automation tool that can be used to
+ * add a new Namespace to the TypeScript Toolkit.
  * 
  * @author Zach Vaughan (FusedKush)
  */
 
-import { spawnSync } from "node:child_process";
 import {
     type ToolkitSchema,
     fetchToolkitSchema,
     updateToolkitSchema
 } from "./utils.ts";
+import { spawnSync } from "node:child_process";
 import Readline from "node:readline/promises";
 
 
 // Main Script
 (async () => {
 
+    /* Script Variables */
+
+    /** The TypeScript Toolkit Schema being queried and modified. */
     let schema: ToolkitSchema = fetchToolkitSchema();
+    /**
+     * The {@link Readline.Interface Readline Interface} responsible for
+     * prompting the user for input.
+     */
     let rl = Readline.createInterface(process.stdin, process.stdout);
-    let namespace: string | null = null;
-    let namespaceDetails: ToolkitSchema[string] = { tools: {} };
+
+    /** The name of the new namespace or `null` if one has not been specified yet. */
+    let namespaceName: string | null = null;
+    /** Details about the new namespace being added. */
+    let namespaceDetails: ToolkitSchema[string] = {};
+    /** Indicates whether or not to prompt the user for details about the new namespace. */
     let interactiveMode: boolean = true;
+    /**
+     * Indicates whether or not to print out what changes
+     * would have been made instead of making them.
+     */
     let dryRun: boolean = false;
+    /**
+     * Indicates whether or not the user has confirmed
+     * the entered {@link namespaceName} and {@link namespaceDetails}.
+     * 
+     * Only used if {@link interactiveMode} is `true`.
+     */
     let confirmed: boolean = false;
 
+
+    /* Helper Functions */
+
+    /**
+     * Check if `namespace` is a valid Namespace Name,
+     * automatically printing an error message to the console if
+     * it is not.
+     * 
+     * @param namespace     The Namespace Name being tested.
+     * 
+     * @returns             `true` if `namespace` is a valid namespace name
+     *                      or `false` if it is not.
+     */
     const isValidNamespace = ( namespace: string ): boolean => {
 
         if ( !/^[a-zA-Z0-9]+$/.test(namespace) ) {
@@ -39,22 +74,38 @@ import Readline from "node:readline/promises";
 
     };
 
+    /**
+     * Prompt the user for the {@link namespaceName name}
+     * of the new Namespace being added.
+     * 
+     * @returns     A promise that is fulfilled once the user has specified
+     *              a valid value for the {@link namespaceName}.
+     */
     const promptForName = async () => {
-
         
         console.log("Please enter the name of the new namespace");
         console.log();
 
+        // Continue re-prompting the user until a valid
+        // Namespace Name has been provided.
         do {
             const response = await rl.question("Namespace Name: ");
 
             if (response && response.trim().length > 0)
-                namespace = response;    
-        } while (!namespace || !isValidNamespace(namespace));
+                namespaceName = response;    
+        } while (!namespaceName || !isValidNamespace(namespaceName));
         
         console.log();
 
     };
+    /**
+     * Prompt the user for the {@link namespaceDetails.description description}
+     * of the new Namespace being added.
+     * 
+     * @returns     A promise that is fulfilled once the user has specified a valid value
+     *              for the {@link namespaceDetails.description namespace description} or
+     *              declined to do so.
+     */
     const promptForDescription = async () => {
 
         console.log("Do you want to add a description for the new namespace?");
@@ -70,6 +121,14 @@ import Readline from "node:readline/promises";
         console.log();
 
     };
+    /**
+     * Prompt the user for the {@link namespaceDetails.markdownDescription markdown description}
+     * of the new Namespace being added.
+     * 
+     * @returns     A promise that is fulfilled once the user has specified a valid value
+     *              for the {@link namespaceDetails.markdownDescription namespace markdown description}
+     *              or declined to do so.
+     */
     const promptForMarkdownDescription = async () => {
 
         console.log("Do you want to add a markdown description for the new namespace?");
@@ -87,7 +146,10 @@ import Readline from "node:readline/promises";
     };
 
 
+    /* Main Script */
+
     try {
+        // Process the command-line arguments
         for (let i = 2; i < process.argv.length; i++) {
             const arg = process.argv[i];
             const lcArg = arg.toLowerCase();
@@ -96,7 +158,7 @@ import Readline from "node:readline/promises";
                 const nextArg = process.argv[i + 1];
     
                 if (nextArg !== undefined && nextArg.length > 0) {
-                    namespace = process.argv[i + 1];
+                    namespaceName = process.argv[i + 1];
                     interactiveMode = false;
                     i++;
                 }
@@ -153,36 +215,40 @@ import Readline from "node:readline/promises";
             }
         }
     
-        if (!namespace)
-            await promptForName();
-        else if (!isValidNamespace(namespace))
-            return;
-    
+        // If the script is in Interactive Mode, we need to
+        // prompt the user for details about the new Namespace being added.
         if (interactiveMode) {
+            await promptForName();
+
             if (!namespaceDetails.description)
                 await promptForDescription();
             if (!namespaceDetails.markdownDescription)
                 await promptForMarkdownDescription();
             
             while (!confirmed) {
+                /** The user's response to the confirmation prompt. */
+                let response: string = "";
+
                 console.log();
                 console.log("Does everything look right?");
                 console.log({
-                    name: namespace,
+                    name: namespaceName,
                     description: namespaceDetails.description,
                     markdownDescription: namespaceDetails.markdownDescription
                 });
         
-                let response: string = "";
-        
+                // Continue re-prompting the user until a valid response is provided.
                 while ( !['yes', 'y', 'no', 'n'].includes(response) )
                     response = (await rl.question("(Y)es/(N)o: ")).toLowerCase();
 
                 console.log();
         
+                // Once confirmed, we can simply exit the confirmation loop.
                 if (response.startsWith('y')) {
                     confirmed = true;
                 }
+                // If unconfirmed, we want to re-prompt the user
+                // for all of the details about the new Namespace.
                 else {
                     await promptForName();
                     await promptForDescription();
@@ -190,11 +256,19 @@ import Readline from "node:readline/promises";
                 }
             }
         }
-    
-        schema[namespace!] = namespaceDetails;
+        // If the Namespace Name specified via the command-line
+        // is invalid, the script should terminate immediately
+        // after the error message is printed by `isValidNamespace()`.
+        else if (!isValidNamespace(namespaceName!)) {
+            return;
+        }
+        
+        // Update the Toolkit Schema to add the new Namespace.
+        schema[namespaceName!] = namespaceDetails;
         updateToolkitSchema(schema, dryRun);
     
         if (!dryRun) {
+            /** The result of processing the Updated Toolkit Schema. */
             const result = spawnSync(
                 'node',
                 ['--experimental-transform-types', 'process-toolkit-schema.ts', '--skip-dependency-imports'],
@@ -202,7 +276,7 @@ import Readline from "node:readline/promises";
             ).status;
     
             if (result === 0)
-                console.log(`Successfully added namespace '${namespace!}'!`);
+                console.log(`Successfully added namespace '${namespaceName!}'!`);
         }
     }
     catch (error) {
