@@ -24,7 +24,9 @@
     "build": "tsc",
     "watch": "tsc --watch",
     "process-toolkit-schema": "node --experimental-transform-types tools/process-toolkit-schema.ts",
-    "process-toolkit-schema:dry-run": "node --experimental-transform-types tools/process-toolkit-schema.ts --dry-run"
+    "process-toolkit-schema:dry-run": "node --experimental-transform-types tools/process-toolkit-schema.ts --dry-run",
+    "add-namespace": "node --experimental-transform-types tools/add-namespace.ts",
+    "add-namespace:dry-run": "node --experimental-transform-types tools/add-namespace.ts --dry-run"
   },
   "repository": {
     "type": "git",
