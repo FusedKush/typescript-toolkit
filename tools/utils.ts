@@ -140,7 +140,7 @@ export interface ToolkitSchema {
         /**
          * The Tools in this Toolkit Namespace.
          */
-        tools: {
+        tools?: {
 
             /** A Tool in the TypeScript Toolkit. */
             [Tool: string]: {

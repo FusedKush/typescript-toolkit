@@ -46,6 +46,7 @@
                                     "title": "Tool Exports",
                                     "description": "The TypeScript/JavaScript Members exported by this Toolkit Tool.",
                                     "type": "object",
+                                    "required": "true",
                                     "patternProperties": {
                                         "^[a-zA-Z0-9]+$": {
                                             "type": "object",
