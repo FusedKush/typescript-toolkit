@@ -7,7 +7,7 @@ TypeScript Node Scripts used to automate and streamline various parts of the dev
 <br>
 
 To use these tools, run `node` with the `--experimental-transform-types` flag and pass it the path to the tool. E.g.,
-```ps
+```bash
 node --experimental-transform-types add-namespace.ts -n test -d "A Test Namespace."
 ```
 
@@ -17,7 +17,7 @@ node --experimental-transform-types add-namespace.ts -n test -d "A Test Namespac
 > [!TIP]
 > If you are using a Node Version Manager such as [nvs](https://github.com/jasongin/nvs) or [nvm](https://github.com/nvm-sh/nvm), you can use the `.node-version` file to download the appropriate version of `node`. E.g.,
 >
-> ```ps
+> ```bash
 > cd tools
 > nvs use
 > node --experimental-transform-types process-toolkit-schema.ts
@@ -28,7 +28,7 @@ node --experimental-transform-types add-namespace.ts -n test -d "A Test Namespac
 ## [`process-toolkit-schema`](process-toolkit-schema.ts)
 A helper script used to validate and update various project and toolkit files based on the Toolkit Schema ([`toolkit/schema.json`](../toolkit/schema.json)).
 
-```ps
+```console
 process-toolkit-schema  [/? | --usage | --help]
                         [--dry-run]
                         [[-v | --verify-schema] | [-V | --skip-schema-verification]]
@@ -72,7 +72,7 @@ Update or skip updating the Toolkit Dependency Imports.
 ## [`add-namespace`](add-namespace.ts)
 A helper script used to add a new Namespace to the TypeScript Toolkit.
 
-```ps
+```console
 add-namespace   [/? | --usage | --help]
                 [--dry-run]
                 [<-n | --namespace> <Namespace>]
