@@ -19,19 +19,11 @@ import {
     stringifyJson,
     fetchToolkitSchema,
     ROOT_PATH,
-    TOOLKIT_PATH
+    TOOLKIT_PATH,
+    writeFile
 } from "./utils.ts";
 
-import {
-    copyFileSync,
-    existsSync,
-    mkdtempSync,
-    readdirSync,
-    readFileSync,
-    rmSync,
-    writeFileSync
-} from "node:fs";
-import { tmpdir } from "node:os";
+import { existsSync, readdirSync } from "node:fs";
 import Path from "node:path";
 import YAML from "yaml";
 
@@ -476,6 +468,8 @@ const stringifyYaml = ( data: YAML.Document ): string => data.toString({ flowCol
  * 
  * @throws                  An {@link Error} if conflictiing changes have already
  *                          been recorded for the specified `file`.
+ * 
+ * @see                     {@link commitChanges `commitChanges()`}
  */
 function recordChanges ( file: string, modifiedContents: string ) {
 
@@ -488,64 +482,24 @@ function recordChanges ( file: string, modifiedContents: string ) {
 /**
  * Commit all of the changes made to files by this script.
  * 
- * After successfully invoking this function,
- * the {@link changes `changes`} map will be empty.
+ * If the `dryRun` argument is omitted or `false`,
+ * the {@link changes `changes`} map will be empty
+ * after successfully invoking this function.
  * 
- * To print to the console what changes would be made
- * instead of committing them to the files,
- * use {@link printChanges `printChanges()`} instead.
+ * @param dryRun    Indicates whether or not to print to the console
+ *                  what changes would have been made to the various
+ *                  files instead of actually making them.
  * 
- * @see {@link recordChanges `recordChanges()`}
- * @see {@link printChanges `printChanges()`}
+ * @see             {@link recordChanges `recordChanges()`}
+ * @see             {@link writeFile `writeFile()`}
  */
-function commitChanges () {
+function commitChanges ( dryRun: boolean = false ) {
 
-    var tempFileDir: string = mkdtempSync(Path.join(tmpdir(), 'typescript-toolkit-'));
-
-    for (let file in changes) {
-        const modifiedContents = changes[file];
-
-        try {
-            const tempfileName = `${tempFileDir}${Path.sep}${Path.basename(file)}`;
-
-            // Write the modified contents to a temporary file before
-            // replacing the existing file with the new one.
-            writeFileSync(tempfileName, modifiedContents, { encoding: 'utf-8' });
-            copyFileSync(tempfileName, file);
-            rmSync(tempfileName);
-            console.log(`[+] Successfully updated file ${prettyPath(file)}.`);
-        }
-        catch (error) {
-            throw new Error(
-                `Failed to commit changes to file ${prettyPath(file)}: ${(error as Error).message}`,
-                { cause: error }
-            );
-        }
-    }
+    for (let file in changes)
+        writeFile(file, changes[file], { dryRun: dryRun, tempDirPrefix: 'process-toolkit-schema' });
     
-    changes = {};
-
-}
-/**
- * Print to the console all of the changes
- * made to files by this script.
- * 
- * Unlike when {@link commitChanges committing the changes},
- * the {@link changes `changes`} map will **not** be
- * modified by this function.
- * 
- * To commit the changes to the files instead of
- * printing them out, use {@link commitChanges `commitChanges()`} instead.
- * 
- * @see {@link recordChanges `recordChanges()`}
- * @see {@link commitChanges `commitChanges()`}
- */
-function printChanges () {
-
-    for (let file in changes) {
-        console.log(`\nChanges to be made to file ${prettyPath(file)}:`);
-        console.log(indentOutput(changes[file]));
-    }
+    if (!dryRun)
+        changes = {};
 
 }
 
@@ -606,7 +560,7 @@ const verifySchema: ScriptActionFunction = (schema, dryRun) => {
                                 }
                             );
                         }
-                        else if ( !(segments[1] in schema[segments[0]].tools) ) {
+                        else if ( !(segments[1] in (schema[segments[0]].tools ?? {})) ) {
                             throw new SchemaValidationError(
                                 `Unknown Tool '${segments[1]}' in Namespace '${segments[0]}' specified as a Dependency for '${fullToolName}'.`,
                                 {
@@ -1148,9 +1102,9 @@ const updateDependencyImports: ScriptActionFunction = (schema) => {
                                             const depNamespace = schema[segments[0]];
 
                                             // Ensure the specified Toolkit Tool exists.
-                                            if (segments[1] in depNamespace.tools) {
+                                            if (segments[1] in (depNamespace.tools ?? {})) {
                                                 /** The Toolkit Tool being imported. */
-                                                const depTool = depNamespace.tools[segments[1]];
+                                                const depTool = depNamespace.tools![segments[1]];
 
                                                 // Ensure the specified Toolkit Export exists.
                                                 if (segments[2] in depTool.exports) {
@@ -1353,7 +1307,8 @@ const updateDependencyImports: ScriptActionFunction = (schema) => {
     // Check for /?, --usage, or --help in any position
     for (let i = 0; i < programArgs.length; i++) {
         if (['/?', '--usage', '--help'].includes(programArgs[i].toLowerCase())) {
-            console.log("Usage: process-toolkit-schema [--dry-run] [--usage | --help]");
+            console.log("Usage: process-toolkit-schema [/? | --usage | --help]");
+            console.log("                              [--dry-run]");
             console.log("                              [[-v | --verify-schema] | [-V | --skip-schema-verification]]");
             console.log("                              [[-e | --update-package-exports] | [-E | --skip-package-exports]]");
             console.log("                              [[-i | --update-issue-templates] | [-I | --skip-issue-templates]]");
@@ -1363,9 +1318,9 @@ const updateDependencyImports: ScriptActionFunction = (schema) => {
             console.log("A helper script used to validate and update various project and toolkit files based on the Toolkit Schema (toolkit/schema.json).");
             console.log();
             console.log();
-            console.log("Command-Line Arguments:");
+            console.log("Options:");
             console.log();
-            console.log("       --usage, --help:               Show this usage message");
+            console.log("       /?, --usage, --help:           Show this usage message");
             console.log("       --dry-run:                     Show what changes would be made");
             console.log();
             console.log("   -v, --verify-schema,");
@@ -1520,14 +1475,9 @@ const updateDependencyImports: ScriptActionFunction = (schema) => {
         if (options[action])
             ACTIONS_MAP[action as keyof typeof ACTIONS_MAP](schema, options.dryRun);
 
-    if (Object.keys(changes).length > 0) {
-        if (!options.dryRun)
-            commitChanges();
-        else
-            printChanges();
-    }
-    else {
+    if (Object.keys(changes).length > 0)
+        commitChanges(options.dryRun);
+    else
         console.log("No changes were made to any files.");
-    }
 
 })();

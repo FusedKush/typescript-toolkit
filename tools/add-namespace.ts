@@ -192,7 +192,8 @@ import Readline from "node:readline/promises";
                 dryRun = true;
             }
             else if (['/?', '--usage', '--help'].includes(lcArg)) {
-                console.log("Usage: add-namespace [--dry-run] [--usage | --help]");
+                console.log("Usage: add-namespace [/? | --usage | --help]");
+                console.log("                     [--dry-run]")
                 console.log("                     [[-n | --namespace] <Namespace>]");
                 console.log("                     [[-d | --description] <Description>]");
                 console.log("                     [[-m | --markdown-description] <Markdown Description>]");
@@ -202,7 +203,7 @@ import Readline from "node:readline/promises";
                 console.log();
                 console.log("Command-Line Arguments:");
                 console.log();
-                console.log("       --usage, --help:            Show this usage message");
+                console.log("       /?, --usage, --help:        Show this usage message");
                 console.log("       --dry-run:                  Show what changes would be made");
                 console.log();
                 console.log("   -n, --namespace:                The name of the new namespace to add.");
@@ -265,7 +266,7 @@ import Readline from "node:readline/promises";
         
         // Update the Toolkit Schema to add the new Namespace.
         schema[namespaceName!] = namespaceDetails;
-        updateToolkitSchema(schema, dryRun);
+        updateToolkitSchema(schema, dryRun, 'add-namespace');
     
         if (!dryRun) {
             /** The result of processing the Updated Toolkit Schema. */

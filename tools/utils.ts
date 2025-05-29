@@ -5,10 +5,21 @@
  */
 declare module "./utils.ts";
 
-import { copyFileSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import {
+    copyFileSync,
+    existsSync,
+    mkdirSync,
+    mkdtempSync,
+    readFileSync,
+    rmdirSync,
+    rmSync,
+    writeFileSync
+} from "node:fs";
 import { tmpdir } from "node:os";
 import Path from "node:path";
 
+
+/* Exported Types & Interfaces */
 
 /**
  * An enumeration type comprised of the different types that
@@ -198,17 +209,73 @@ export interface ToolkitSchema {
 }
 
 /**
+ * An interface defining the options that can
+ * be passed to the {@link writeFile `writeFile()`} function.
+ * 
+ * @see {@link writeFile `writeFile()`}
+ */
+export interface WriteFileOptions {
+
+    /**
+     * Indicates whether or not to print to the console
+     * what changes would have been made to the
+     * file instead of actually making them.
+     */
+    dryRun?: boolean;
+    /**
+     * The prefix of the randomly-generated temporary directory.
+     * 
+     * When specified, the temporary directory will
+     * have a path of the following format:
+     * `$TEMP/typescript-toolkit/$PREFIX-$RANDOM`
+     * where `$TEMP` is the {@link tmpdir operating system's default directory for temporary files},
+     * `$PREFIX` is the `tempDirPrefix`, and `$RANDOM` corresponds to the
+     * randomly-generated characters appended to the end of the directory name.
+     * 
+     * When omitted, the temporary directory will
+     * instead have a path of the following format:
+     * `$TEMP/typescript-toolkit/$RANDOM` where `$TEMP` is
+     * the {@link tmpdir operating system's default directory for temporary files}
+     * and `$RANDOM` corresponds to the randomly-generated characters appended
+     * to the end of the directory name.
+     */
+    tempDirPrefix?: string;
+
+}
+
+
+/* Internal Global Variables */
+
+/**
+ * A map of {@link WriteFileOptions.tempDirPrefix Temporary Directory Prefixes}
+ * to the {@link mkdtempSync Randomly-Generated Temporary Directory Name}.
+ * 
+ * This variable is primarily used by the {@link writeFile `writeFile()`}
+ * function to re-use temporary directories for multiple files being
+ * modified by the same script.
+ * 
+ * @see {@link writeFile `writeFile()`}
+ */
+var tempDirs: Record<string, string> = {};
+
+
+/* Exported Functions */
+// Toolkit Schema Management
+
+/**
  * Retrieve the {@link ToolkitSchema} from the
  * TypeScript Toolkit Schema (`/toolkit/schema.json`).
  * 
- * Note that any keys starting with a `$` character in
- * the Toolkit Schema will be automatically omitted
+ * Any keys starting with a `$` character in the
+ * Toolkit Schema object will be automatically omitted
  * from the returned object.
  * 
  * @returns     The {@link Parsed Toolkit Schema}.
  * 
  * @throws      An {@link Error} if the Toolkit Schema could
  *              not be successfully retrieved or parsed.
+ * 
+ * @see         {@link updateToolkitSchema `updateToolkitSchema()`}
  */
 export function fetchToolkitSchema (): ToolkitSchema {
 
@@ -234,14 +301,50 @@ export function fetchToolkitSchema (): ToolkitSchema {
     }
 
 }
-export function updateToolkitSchema ( schema: ToolkitSchema, dryRun: boolean = false ): void {
+/**
+ * Update the TypeScript Toolkit Schema to reflect
+ * the specified {@link ToolkitSchema} object.
+ * 
+ * @param schema            The {@link ToolkitSchema} representing the
+ *                          Modified Toolkit Schema.
+ * 
+ * @param dryRun            Indicates whether or not to print to the console
+ *                          what changes would have been made to the various
+ *                          files instead of actually making them.
+ * 
+ * @param tempDirPrefix     The {@link WriteFileOptions.tempDirPrefix Temporary Directory Prefix}
+ *                          for {@link writeFile `writeFile()`} to use.
+ * 
+ * @throws                  An {@link Error} if the Toolkit Schema could
+ *                          not be successfully updated.
+ * 
+ * @see                     {@link fetchToolkitSchema `fetchToolkitSchema()`}
+ * @see                     {@link stringifyJson `stringifyJson()`}
+ * @see                     {@link writeFile `writeFile()`}
+ */
+export function updateToolkitSchema (
+    schema: ToolkitSchema,
+    dryRun: boolean = false,
+    tempDirPrefix?: string
+): void {
 
-    writeFile(`${TOOLKIT_PATH}/schema.json`, stringifyJson(schema), dryRun);
-
-    if (!dryRun)
-        console.log("Successfully updated the TypeScript Toolkit Schema.");
+    try {
+        writeFile(`${TOOLKIT_PATH}/schema.json`, stringifyJson(schema), { dryRun, tempDirPrefix: tempDirPrefix });
+    
+        if (!dryRun)
+            console.log("Successfully updated the TypeScript Toolkit Schema.");
+    }
+    catch (error) {
+        throw new Error(
+            `Failed to update the TypeScript Toolkit Schema: ${(error as Error).message}`,
+            { cause: error }
+        );
+    }
 
 }
+
+
+// Program Output Formatting
 
 /**
  * Indent every line of the designated `output`.
@@ -268,16 +371,133 @@ export const prettyPath = ( path: string ): string => Path.relative("../", Path.
  * A helper function to synchronously get the contents
  * of a file as a UTF-8-Encoded `string`.
  * 
- * @param filePath  The path to the file being read.
+ * @param filepath  The path to the file being read.
  * 
  * @returns         A `string` containing the contents of the file.
+ * 
+ * @see             {@link writeFile `writeFile()`}
  */
 export const readFile = ( filepath: string ): string => readFileSync(filepath, { encoding: 'utf-8' });
-export const writeFile = ( filepath: string, contents: string, dryRun: boolean = false ) => {
 
-    var tempFileDir: string = mkdtempSync(Path.join(tmpdir(), 'typescript-toolkit-'));
+/**
+ * A helper function to synchronously write the
+ * provided `contents` to the file specified by the `filepath`.
+ * 
+ * The specified `contents` will first be written to a temporary
+ * file before copying and overriding the file specified
+ * `filepath` with the contents of the temporary file.
+ * 
+ * @param filepath  The path to the file being written to.
+ * 
+ * @param contents  The contents to be written to the specified file.
+ * 
+ * @param options   An {@link WriteFileOptions object}
+ *                  containing the options to use when writing the file.
+ * 
+ * @throws          An {@link Error} if the designated file was not
+ *                  successfully updated with the specified `contents`.
+ */
+export function writeFile ( filepath: string, contents: string, options?: WriteFileOptions ): void;
+/**
+ * A helper function to synchronously write the
+ * provided `contents` to the file specified by the `filepath`.
+ * 
+ * The specified `contents` will first be written to a temporary
+ * file before copying and overriding the file specified
+ * `filepath` with the contents of the temporary file.
+ * 
+ * @param filepath          The path to the file being written to.
+ * 
+ * @param contents          The contents to be written to the specified file.
+ * 
+ * @param dryRun            Indicates whether or not to print to the console
+ *                          what changes would have been made to the
+ *                          file instead of actually making them.
+ * 
+ * @param tempDirSuffix     The prefix of the randomly-generated temporary directory.
+ *                          
+ *                          When specified, the temporary directory will
+ *                          have a path of the following format:
+ *                          `$TEMP/typescript-toolkit/$PREFIX-$RANDOM`
+ *                          where `$TEMP` is the {@link tmpdir operating system's default directory for temporary files},
+ *                          `$PREFIX` is the `tempDirPrefix`, and `$RANDOM` corresponds to the
+ *                          randomly-generated characters appended to the end of the directory name.
+ *                          
+ *                          When omitted, the temporary directory will
+ *                          instead have a path of the following format:
+ *                          `$TEMP/typescript-toolkit/$RANDOM` where `$TEMP` is
+ *                          the {@link tmpdir operating system's default directory for temporary files}
+ *                          and `$RANDOM` corresponds to the randomly-generated characters appended
+ *                          to the end of the directory name.
+ * 
+ * @throws                  An {@link Error} if the designated file was not
+ *                          successfully updated with the specified `contents`.
+ */
+export function writeFile (
+    filepath: string,
+    contents: string,
+    dryRun?: boolean,
+    tempDirSuffix?: string
+): void;
+export function writeFile (
+    filepath: string,
+    contents: string,
+    optionsOrDryRun?: WriteFileOptions | boolean,
+    tempDirSuffix?: string
+): void {
 
-    if (!dryRun) {
+    /** Options to use when writing the file. */
+    let options: Required<WriteFileOptions> = (() => {
+
+        let options: Required<WriteFileOptions> = {
+            dryRun: false,
+            tempDirPrefix: ''
+        };
+
+        if (typeof optionsOrDryRun == 'object') {
+            Object.assign(options, optionsOrDryRun);
+        }
+        else {
+            if (typeof optionsOrDryRun == 'boolean')
+                options.dryRun = optionsOrDryRun;
+            if (typeof tempDirSuffix == 'string')
+                options.tempDirPrefix = tempDirSuffix;
+        }
+
+        return options;
+
+    })();
+    /** The path to the temporary file directory. */
+    let tempFileDir: string = (() => {
+
+        /**
+         * The path to the base directory where temporary files
+         * for TypeScript Toolkit Tools are to be stored.
+         */
+        const BASE_TEMP_DIR = Path.join(tmpdir(), 'typescript-toolkit');
+
+        if ( !(options.tempDirPrefix in tempDirs) ) {
+            // Ensure the BASE_TEMP_DIR exists.
+            if ( !existsSync(BASE_TEMP_DIR) )
+                mkdirSync(BASE_TEMP_DIR);
+
+            tempDirs[options.tempDirPrefix] = mkdtempSync(
+                Path.join(
+                    BASE_TEMP_DIR,
+                    options.tempDirPrefix
+                        ? `${options.tempDirPrefix}-`
+                        : ''
+                )
+            );
+        }
+        
+        return tempDirs[options.tempDirPrefix];
+
+    })();
+    /** The {@link prettyPath pretty} `filePath`. */
+    let prettyFilePath = prettyPath(filepath);
+
+    if (!options.dryRun) {
         try {
             const tempfileName = `${tempFileDir}${Path.sep}${Path.basename(filepath)}`;
     
@@ -286,21 +506,21 @@ export const writeFile = ( filepath: string, contents: string, dryRun: boolean =
             writeFileSync(tempfileName, contents, { encoding: 'utf-8' });
             copyFileSync(tempfileName, filepath);
             rmSync(tempfileName);
-            console.log(`Successfully updated file ${prettyPath(filepath)}.`);
+            console.log(`Successfully updated file ${prettyFilePath}.`);
         }
         catch (error) {
             throw new Error(
-                `Failed to commit changes to file ${prettyPath(filepath)}: ${(error as Error).message}`,
+                `Failed to commit changes to file ${prettyFilePath}: ${(error as Error).message}`,
                 { cause: error }
             );
         }
     }
     else {
-        console.log(`\nChanges to be made to file ${prettyPath(filepath)}:`);
+        console.log(`\nChanges to be made to file ${prettyFilePath}:`);
         console.log(indentOutput(contents));
     }
 
-};
+}
 
 /**
  * A helper function to synchronously retrieve 
@@ -314,25 +534,52 @@ export const writeFile = ( filepath: string, contents: string, dryRun: boolean =
  * 
  * @throws          A {@link SyntaxError} if the contents of the specified file
  *                  does not form a valid JSON `string`.
+ * 
+ * @see             {@link stringifyJson `stringifyJson()`}
  */
 export const readJsonFile = <T extends Record<string, any>> ( filePath: string ): T => JSON.parse(readFile(filePath));
-
 /**
  * A helper function to `string`-ify the designated JSON `data`.
  * 
  * @param data  The `JSON` data being `string`-ified.
  * 
  * @returns     A valid JSON `string` terminated by a newline (`/n`).
+ * 
+ * @see         {@link readJsonFile `readJsonFile()`}
  */
 export const stringifyJson = ( data: Record<string, any> ): string => `${JSON.stringify(data, null, 2)}\n`;
 
 
+/* Exported Constants */
+
 /**
  * The path to the root of the project.
+ * 
+ * @see {@link TOOLKIT_PATH}
  */
 export const ROOT_PATH = "../";
 /**
  * The path to the `/toolkit` Directory containing
  * the main TypeScript Toolkit Codebase.
+ * 
+ * @see {@link ROOT_PATH}
  */
 export const TOOLKIT_PATH = `${ROOT_PATH}/toolkit`;
+
+
+/* Global Module Code */
+
+// Register an event handler to remove all temporary directories
+// created by the script on exit.
+process.on('exit', () => {
+
+    for (let prefix in tempDirs) {
+        try {
+            rmdirSync(tempDirs[prefix]);
+        }
+        catch (error) {
+            console.error(`Failed to remove temporary directory ${tempDirs[prefix]}:`, error);
+        }
+    }
+
+});

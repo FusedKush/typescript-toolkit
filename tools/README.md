@@ -84,12 +84,12 @@ As long as the [`--dry-run`](#--dry-run-1) option is not used, the [`process-too
 
 
 ### Options
-#### `[--dry-run]`
-Print what changes would have been made instead of actually making them.
-
-
 #### `[/? | --usage | --help]`
 Print the usage message.
+
+
+#### `[--dry-run]`
+Print what changes would have been made instead of actually making them.
 
 
 #### `[<-n | --namespace> <Namespace>]`
