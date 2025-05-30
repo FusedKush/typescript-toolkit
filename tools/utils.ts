@@ -745,7 +745,11 @@ export function updateToolkitSchema (
 ): void {
 
     try {
-        writeFile(TOOLKIT_SCHEMA_PATH, stringifyJson(schema), { dryRun, tempDirPrefix });
+        writeFile(
+            TOOLKIT_SCHEMA_PATH,
+            stringifyJson(Object.assign({ '$schema': '../toolkit-schema.json' }, schema)),
+            { dryRun, tempDirPrefix }
+        );
     
         if (!dryRun)
             console.log("Successfully updated the TypeScript Toolkit Schema.");
