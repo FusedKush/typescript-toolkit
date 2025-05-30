@@ -1,99 +1,99 @@
 {
-    "$schema": "https://json-schema.org/draft/2020-12/schema",
-    "title": "TypeScript Toolkit Organizational Schema",
-    "description": "The Organizational JSON Schema for the TypeScript Toolkit.",
-    "type": "object",
-    "patternProperties": {
-        "^[a-zA-Z0-9]+$": {
-            "title": "TypeScript Toolkit Namespace",
-            "description": "A Namespace in the TypeScript Toolkit.",
-            "type": "object",
-            "properties": {
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "TypeScript Toolkit Organizational Schema",
+  "description": "The Organizational JSON Schema for the TypeScript Toolkit.",
+  "type": "object",
+  "patternProperties": {
+    "^[a-zA-Z0-9]+$": {
+      "title": "TypeScript Toolkit Namespace",
+      "description": "A Namespace in the TypeScript Toolkit.",
+      "type": "object",
+      "properties": {
+        "description": {
+          "title": "Namespace Description",
+          "description": "A short description of the Toolkit Namespace.",
+          "type": "string",
+          "required": true
+        },
+        "markdownDescription": {
+          "title": "Namespace Markdown Description",
+          "description": "A short description of the Toolkit Namespace that supports Markdown.\n\nIf omitted, the description will be used instead.",
+          "markdownDescription": "A short description of the Toolkit Namespace that supports Markdown.\n\nIf omitted, the `description` will be used instead.",
+          "type": "string"
+        },
+        "tools": {
+          "title": "Namespace Tools",
+          "description": "The Tools in this Toolkit Namespace.",
+          "type": "object",
+          "patternProperties": {
+            "^[a-zA-Z0-9]+$": {
+              "title": "TypeScript Toolkit Tool",
+              "description": "A Tool in the TypeScript Toolkit.",
+              "type": "object",
+              "properties": {
                 "description": {
-                    "title": "Namespace Description",
-                    "description": "A short description of the Toolkit Namespace.",
-                    "type": "string",
-                    "required": true
+                  "title": "Tool Description",
+                  "description": "A short description of the Toolkit Tool.",
+                  "type": "string"
                 },
                 "markdownDescription": {
-                    "title": "Namespace Markdown Description",
-                    "description": "A short description of the Toolkit Namespace that supports Markdown.\n\nIf omitted, the description will be used instead.",
-                    "markdownDescription": "A short description of the Toolkit Namespace that supports Markdown.\n\nIf omitted, the `description` will be used instead.",
-                    "type": "string"
+                  "title": "Tool Markdown Description",
+                  "description": "A short description of the Toolkit Tool that supports Markdown.\n\nIf omitted, the description will be used instead.",
+                  "markdownDescription": "A short description of the Toolkit Tool that supports Markdown.\n\nIf omitted, the `description` will be used instead.",
+                  "type": "string"
                 },
-                "tools": {
-                    "title": "Namespace Tools",
-                    "description": "The Tools in this Toolkit Namespace.",
-                    "type": "object",
-                    "patternProperties": {
-                        "^[a-zA-Z0-9]+$": {
-                            "title": "TypeScript Toolkit Tool",
-                            "description": "A Tool in the TypeScript Toolkit.",
-                            "type": "object",
-                            "properties": {
-                                "description": {
-                                    "title": "Tool Description",
-                                    "description": "A short description of the Toolkit Tool.",
-                                    "type": "string"
-                                },
-                                "markdownDescription": {
-                                    "title": "Tool Markdown Description",
-                                    "description": "A short description of the Toolkit Tool that supports Markdown.\n\nIf omitted, the description will be used instead.",
-                                    "markdownDescription": "A short description of the Toolkit Tool that supports Markdown.\n\nIf omitted, the `description` will be used instead.",
-                                    "type": "string"
-                                },
-                                "exports": {
-                                    "title": "Tool Exports",
-                                    "description": "The TypeScript/JavaScript Members exported by this Toolkit Tool.",
-                                    "type": "object",
-                                    "required": "true",
-                                    "patternProperties": {
-                                        "^[a-zA-Z0-9]+$": {
-                                            "type": "object",
-                                            "title": "Exported TypeScript Toolkit Tool Member",
-                                            "description": "A TypeScript/JavaScript Member exported by a Tool in the TypeScript Toolkit.",
-                                            "properties": {
-                                                "type": {
-                                                    "title": "Exported Member Type",
-                                                    "description": "The type of the exported member.",
-                                                    "required": "true",
-                                                    "enum": ["type", "interface", "class", "function", "constant", "variable", "global"]
-                                                },
-                                                "description": {
-                                                    "title": "Exported Member Description",
-                                                    "description": "A short description of the Exported TypeScript/JavaScript Member.",
-                                                    "type": "string"
-                                                },
-                                                "markdownDescription": {
-                                                    "title": "Exported Member Markdown Description",
-                                                    "description": "A short description of the Exported TypeScript/JavaScript Member that supports Markdown.\n\nIf omitted, the description will be used instead.",
-                                                    "markdownDescription": "A short description of the Exported TypeScript/JavaScript Member that supports Markdown.\n\nIf omitted, the `description` will be used instead.",
-                                                    "type": "string"
-                                                }
-                                            },
-                                            "additionalProperties": false
-                                        }
-                                    },
-                                    "additionalProperties": false
-                                },
-                                "dependencies": {
-                                    "title": "Tool Dependencies",
-                                    "descriptions": "Any Dependencies on other Tools in the TypeScript Toolkit.",
-                                    "type": "array",
-                                    "items": {
-                                        "type": "string",
-                                        "pattern": "^[a-zA-Z0-9]+\/[a-zA-Z0-9]+$"
-                                    },
-                                    "unevaluatedItems": false,
-                                    "uniqueItems": true
-                                }
-                            }
+                "exports": {
+                  "title": "Tool Exports",
+                  "description": "The TypeScript/JavaScript Members exported by this Toolkit Tool.",
+                  "type": "object",
+                  "required": "true",
+                  "patternProperties": {
+                    "^[a-zA-Z0-9]+$": {
+                      "type": "object",
+                      "title": "Exported TypeScript Toolkit Tool Member",
+                      "description": "A TypeScript/JavaScript Member exported by a Tool in the TypeScript Toolkit.",
+                      "properties": {
+                        "type": {
+                          "title": "Exported Member Type",
+                          "description": "The type of the exported member.",
+                          "required": "true",
+                          "enum": ["type", "interface", "class", "function", "constant", "variable", "global"]
+                        },
+                        "description": {
+                          "title": "Exported Member Description",
+                          "description": "A short description of the Exported TypeScript/JavaScript Member.",
+                          "type": "string"
+                        },
+                        "markdownDescription": {
+                          "title": "Exported Member Markdown Description",
+                          "description": "A short description of the Exported TypeScript/JavaScript Member that supports Markdown.\n\nIf omitted, the description will be used instead.",
+                          "markdownDescription": "A short description of the Exported TypeScript/JavaScript Member that supports Markdown.\n\nIf omitted, the `description` will be used instead.",
+                          "type": "string"
                         }
-                    },
-                    "additionalProperties": false
+                      },
+                      "additionalProperties": false
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "dependencies": {
+                  "title": "Tool Dependencies",
+                  "descriptions": "Any Dependencies on other Tools in the TypeScript Toolkit.",
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "pattern": "^[a-zA-Z0-9]+\/[a-zA-Z0-9]+$"
+                  },
+                  "unevaluatedItems": false,
+                  "uniqueItems": true
                 }
+              }
             }
+          },
+          "additionalProperties": false
         }
-    },
-    "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
 }

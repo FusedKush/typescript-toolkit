@@ -1,92 +1,95 @@
 {
-    "$schema": "../toolkit-schema.json",
-    "arrays": {
-        "description": "Utility tools for working with Dynamic-Length Arrays.",
-        "markdownDescription": "Utility tools for working with [Dynamic-Length Arrays](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array).",
-        "tools": {
-            "arrayify": {
-                "description": "Convert the specified type or value into an array, if it is not one already.",
-                "exports": {
-                    "ArrayifyType": {
-                        "type": "type",
-                        "description": "Convert the specified type into an array, if it is not one already."
-                    },
-                    "arrayify": {
-                        "type": "function",
-                        "description": "Convert the specified value into an array, if it is not one already."
-                    }
-                }
-            },
-            "toListString": {
-                "description": "Convert the specified array to a string containing a list of the elements in the array.",
-                "markdownDescription": "Convert the specified array to a `string` containing a list of the elements in the array.",
-                "exports": {
-                    "toListString": {
-                        "type": "function",
-                        "description": "Convert the specified array to a string containing a list of the elements in the array.",
-                        "markdownDescription": "Convert the specified array to a `string` containing a list of the elements in the array."
-                    }
-                }
-            }
+  "$schema": "../toolkit-schema.json",
+  "arrays": {
+    "description": "Utility tools for working with Dynamic-Length Arrays.",
+    "markdownDescription": "Utility tools for working with [Dynamic-Length Arrays](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array).",
+    "tools": {
+      "arrayify": {
+        "description": "Convert the specified type or value into an array, if it is not one already.",
+        "exports": {
+          "ArrayifyType": {
+            "type": "type",
+            "description": "Convert the specified type into an array, if it is not one already."
+          },
+          "arrayify": {
+            "type": "function",
+            "description": "Convert the specified value into an array, if it is not one already."
+          }
         }
-    },
-    "types": {
-        "description": "General-Purpose TypeScript Helper Types.",
-        "tools": {
-            "baseTypes": {
-                "description": "Types representing the Base Types from which all types are derived.",
-                "markdownDescription": "Types representing the _Base Types_ from which all types are derived.",
-                "exports": {
-                    "BaseType": {
-                        "type": "type",
-                        "description": "The Base Types from which all types are derived.",
-                        "markdownDescription": "The _Base Types_ from which all types are derived."
-                    },
-                    "BaseTypeString": {
-                        "type": "type",
-                        "description": "The string values corresponding to each of the Base Types from which all types are derived.",
-                        "markdownDescription": "The `string` values corresponding to each of the _Base Types_ from which all types are derived."
-                    },
-                    "getBaseType": {
-                        "type": "function",
-                        "description": "Get the BaseType of the given value.",
-                        "markdownDescription": "Get the `BaseType` of the given value."
-                    },
-                    "isBaseType": {
-                        "type": "function",
-                        "description": "Check if the given value is of any of the specified BaseTypes.",
-                        "markdownDescription": "Check if the given value is of any of the specified `BaseTypes`."
-                    },
-                    "assertBaseType": {
-                        "type": "function",
-                        "description": "Assert the given value is of any of the specified BaseTypes and throw a TypeError if it is not.",
-                        "markdownDescription": "Assert the given value is of any of the specified `BaseTypes` and throw a `TypeError` if it is not."
-                    }
-                },
-                "dependencies": ["arrays/arrayify", "arrays/toListString"]
-            },
-            "isAny": {
-                "description": "Determine if the given type is any.",
-                "markdownDescription": "Determine if the given type is `any`.",
-                "exports": {
-                    "IsAny": {
-                        "type": "type",
-                        "description": "Determine if the given type is any.",
-                        "markdownDescription": "Determine if the given type is `any`."
-                    }
-                }
-            },
-            "unionToIntersection": {
-                "description": "Transform the specified union into an intersection.",
-                "markdownDescription": "Transform the specified [union](https://www.typescriptlang.org/docs/handbook/2/everyday-types.html#union-types) into an [intersection](https://www.typescriptlang.org/docs/handbook/2/objects.html#intersection-types).",
-                "exports": {
-                    "UnionToIntersection": {
-                        "type": "type",
-                        "description": "Transform the specified union into an intersection.",
-                        "markdownDescription": "Transform the specified [union](https://www.typescriptlang.org/docs/handbook/2/everyday-types.html#union-types) into an [intersection](https://www.typescriptlang.org/docs/handbook/2/objects.html#intersection-types)."
-                    }
-                }
-            }
+      },
+      "toListString": {
+        "description": "Convert the specified array to a string containing a list of the elements in the array.",
+        "markdownDescription": "Convert the specified array to a `string` containing a list of the elements in the array.",
+        "exports": {
+          "toListString": {
+            "type": "function",
+            "description": "Convert the specified array to a string containing a list of the elements in the array.",
+            "markdownDescription": "Convert the specified array to a `string` containing a list of the elements in the array."
+          }
         }
+      }
     }
+  },
+  "types": {
+    "description": "General-Purpose TypeScript Helper Types.",
+    "tools": {
+      "baseTypes": {
+        "description": "Types representing the Base Types from which all types are derived.",
+        "markdownDescription": "Types representing the _Base Types_ from which all types are derived.",
+        "exports": {
+          "BaseType": {
+            "type": "type",
+            "description": "The Base Types from which all types are derived.",
+            "markdownDescription": "The _Base Types_ from which all types are derived."
+          },
+          "BaseTypeString": {
+            "type": "type",
+            "description": "The string values corresponding to each of the Base Types from which all types are derived.",
+            "markdownDescription": "The `string` values corresponding to each of the _Base Types_ from which all types are derived."
+          },
+          "getBaseType": {
+            "type": "function",
+            "description": "Get the BaseType of the given value.",
+            "markdownDescription": "Get the `BaseType` of the given value."
+          },
+          "isBaseType": {
+            "type": "function",
+            "description": "Check if the given value is of any of the specified BaseTypes.",
+            "markdownDescription": "Check if the given value is of any of the specified `BaseTypes`."
+          },
+          "assertBaseType": {
+            "type": "function",
+            "description": "Assert the given value is of any of the specified BaseTypes and throw a TypeError if it is not.",
+            "markdownDescription": "Assert the given value is of any of the specified `BaseTypes` and throw a `TypeError` if it is not."
+          }
+        },
+        "dependencies": [
+          "arrays/arrayify",
+          "arrays/toListString"
+        ]
+      },
+      "isAny": {
+        "description": "Determine if the given type is any.",
+        "markdownDescription": "Determine if the given type is `any`.",
+        "exports": {
+          "IsAny": {
+            "type": "type",
+            "description": "Determine if the given type is any.",
+            "markdownDescription": "Determine if the given type is `any`."
+          }
+        }
+      },
+      "unionToIntersection": {
+        "description": "Transform the specified union into an intersection.",
+        "markdownDescription": "Transform the specified [union](https://www.typescriptlang.org/docs/handbook/2/everyday-types.html#union-types) into an [intersection](https://www.typescriptlang.org/docs/handbook/2/objects.html#intersection-types).",
+        "exports": {
+          "UnionToIntersection": {
+            "type": "type",
+            "description": "Transform the specified union into an intersection.",
+            "markdownDescription": "Transform the specified [union](https://www.typescriptlang.org/docs/handbook/2/everyday-types.html#union-types) into an [intersection](https://www.typescriptlang.org/docs/handbook/2/objects.html#intersection-types)."
+          }
+        }
+      }
+    }
+  }
 }
