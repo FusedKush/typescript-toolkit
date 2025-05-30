@@ -49,6 +49,8 @@
   "homepage": "https://github.com/FusedKush/typescript-toolkit#readme",
   "devDependencies": {
     "@types/node": "^22.15.17",
+    "@types/semver": "^7.7.0",
+    "semver": "^7.7.2",
     "typescript": "^5.8.3",
     "yaml": "^2.8.0"
   }
