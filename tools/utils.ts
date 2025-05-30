@@ -207,6 +207,38 @@ export interface ToolkitSchema {
     }
 
 }
+/**
+ * A partial interface containing the relevant
+ * fields of the parsed `package.json` NPM Configuration File.
+ */
+export interface PackageConfig {
+
+    /**
+     * The current version of the NPM Package.
+     * 
+     * > Version must be parsable by `node-semver`, which is bundled with `npm` as a dependency.
+     */
+    version: string;
+    /**
+     * Defines the mappings that can be used to import the package.
+     * 
+     * > The `exports` field is used to restrict external access to non-exported module files,
+     *   also enables a module to import itself using "name".
+     */
+    exports: {
+
+        /** The mapping for the entire package itself. */
+        ".": "./dist/index.js";
+        /** Mappings for Toolkit Namespaces and Tools. */
+        [x: string]: string;
+
+    };
+    /**
+     * Represents all of the other fields in the configuration file.
+     */
+    [x: string]: any;
+
+}
 
 /**
  * An interface defining the options that can
@@ -548,6 +580,74 @@ export const readJsonFile = <T extends Record<string, any>> ( filePath: string )
  * @see         {@link readJsonFile `readJsonFile()`}
  */
 export const stringifyJson = ( data: Record<string, any> ): string => `${JSON.stringify(data, null, 2)}\n`;
+/**
+ * Retrieve the {@link PackageConfig} from the
+ * NPM Package Configuration (`/package.json`).
+ * 
+ * @returns     The {@link PackageConfig Parsed NPM Package Configuration}.
+ * 
+ * @throws      An {@link Error} if the NPM Package Configuration could
+ *              not be successfully retrieved or parsed.
+ * 
+ * @see         {@link updatePackageConfig `updatePackageConfig()`}
+ * @see         {@link fetchToolkitSchema `fetchToolkitSchema()`}
+ * @see         {@link readJsonFile `readJsonFile()`}
+ */
+export function fetchPackageConfig (): PackageConfig {
+
+    try {
+        return readJsonFile(PACKAGE_CONFIG_PATH);
+    }
+    catch (error) {
+        throw new Error(
+            `Failed to retrieve the NPM Package Configuration: ${(error as Error).message}`,
+            { cause: error }
+        );
+    }
+
+}
+/**
+ * Update the NPM Package Configuration (`/package.json`)
+ * to reflect the specified {@link PackageConfig} object.
+ * 
+ * @param config            The {@link PackageConfig} representing the
+ *                          Modified NPM Package Configuration.
+ * 
+ * @param dryRun            Indicates whether or not to print to the console
+ *                          what changes would have been made to the configuration
+ *                          file instead of actually making them.
+ * 
+ * @param tempDirPrefix     The {@link WriteFileOptions.tempDirPrefix Temporary Directory Prefix}
+ *                          for {@link writeFile `writeFile()`} to use.
+ * 
+ * @throws                  An {@link Error} if the NPM Package Configuration
+ *                          could not be successfully updated.
+ * 
+ * @see                     {@link fetchToolkitSchema `fetchToolkitSchema()`}
+ * @see                     {@link updateToolkitSchema `updateToolkitSchema()`}
+ * @see                     {@link stringifyJson `stringifyJson()`}
+ * @see                     {@link writeFile `writeFile()`}
+ */
+export function updatePackageConfig (
+    config: PackageConfig,
+    dryRun: boolean = false,
+    tempDirPrefix?: string
+): void {
+
+    try {
+        writeFile(TOOLKIT_SCHEMA_PATH, stringifyJson(config), { dryRun, tempDirPrefix });
+    
+        if (!dryRun)
+            console.log("Successfully updated the NPM Package Configuration.");
+    }
+    catch (error) {
+        throw new Error(
+            `Failed to update the NPM Package Configuration: ${(error as Error).message}`,
+            { cause: error }
+        );
+    }
+
+}
 
 
 /* Exported Constants */
@@ -565,6 +665,20 @@ export const ROOT_PATH = "../";
  * @see {@link ROOT_PATH}
  */
 export const TOOLKIT_PATH = `${ROOT_PATH}/toolkit`;
+/**
+ * The path to the NPM Package Configuration (`/package.json`).
+ */
+export const PACKAGE_CONFIG_PATH = `${ROOT_PATH}/package.json`;
+/**
+ * A [semver-compatible version `string`](https://semver.org/)
+ * representing the current version of the NPM Package
+ * according to the NPM Package Configuration (`/package.json`).
+ */
+export const PACKAGE_VERSION: string = (
+    'npm_package_version' in process.env
+        ? process.env['npm_package_version'] as string
+        : fetchPackageConfig().version
+);
 
 
 /* Global Module Code */
