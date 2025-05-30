@@ -78,9 +78,10 @@ add-namespace   [/? | --usage | --help]
                 [<-n | --namespace> <Namespace>]
                 [<-d | --description> <Description>]
                 [<-m | --markdown-description> <Markdown Description>]
+                [<-t | --target-version> <Target Version>]
 ```
 
-As long as the [`--dry-run`](#--dry-run-1) option is not used, the [`process-toolkit-schema`](#process-toolkit-schema) tool will automatically be run with the `--skip-dependency-imports` option after the new namespace has been added to the [TypeScript Toolkit Schema](../toolkit/schema.json).
+As long as the [`--dry-run`](#--dry-run-1) option is not used, the [`process-toolkit-schema`](#process-toolkit-schema) tool will automatically be run with the `--skip-dependency-imports` option after the new Namespace has been added to the [TypeScript Toolkit Schema](../toolkit/schema.json).
 
 
 ### Options
@@ -93,14 +94,18 @@ Print what changes would have been made instead of actually making them.
 
 
 #### `[<-n | --namespace> <Namespace>]`
-Specifies the name of the new namespace.
+Specifies the name of the new Namespace.
 
 When specified, the script will **not** prompt the user for any input, requiring the command-line options to be used to specify the [description](#-d----description-description) and [markdown description](#-m----markdown-description-markdown-description), if desired.
 
 
 #### `[<-d | --description> <Description>]`
-Specifies the description of the new namespace.
+Specifies the description of the new Namespace.
 
 
 #### `[<-m | --markdown-description> <Markdown Description>]`
-Specifies the markdown description of the new namespace.
+Specifies the markdown description of the new Namespace.
+
+
+#### `[<-t | --target-version> <Target Version>]`
+Specifies the target version the new Namespace is to be added in.
