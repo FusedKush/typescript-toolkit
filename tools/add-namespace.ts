@@ -12,6 +12,7 @@ import {
     type ToolkitSchema,
     copyDirectory,
     fetchToolkitSchema,
+    processSchema,
     readFile,
     switchToAltBuffer,
     switchToMainBuffer,
@@ -428,15 +429,8 @@ function createNamespaceFiles (
         createNamespaceFiles(namespaceName!, namespaceDetails, targetVersion, dryRun);
     
         if (!dryRun) {
-            /** The result of processing the Updated Toolkit Schema. */
-            const result = spawnSync(
-                'node',
-                ['--experimental-transform-types', 'process-toolkit-schema.ts', '--skip-dependency-imports'],
-                { shell: true, stdio: 'inherit' }
-            ).status;
-    
-            if (result === 0)
-                console.log(`Successfully added namespace '${namespaceName!}'!`);
+            if (processSchema('--skip-dependency-imports'))
+                console.log(`\nSuccessfully added namespace '${namespaceName!}'!`);
         }
     }
     catch (error) {

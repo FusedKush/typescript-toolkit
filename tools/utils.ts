@@ -18,6 +18,7 @@ import {
     rmSync,
     writeFileSync
 } from "node:fs";
+import { spawnSync } from "node:child_process";
 import { tmpdir } from "node:os";
 import Path from "node:path";
 
@@ -130,6 +131,22 @@ export enum ToolkitExportType {
     GLOBAL = 'global'
 
 };
+/**
+ * A union type comprised of the various command-line options
+ * that can be passed to the {@link processSchema `processSchema()`}
+ * function to use when running the `process-toolkit-schema.ts` automation tool.
+ * 
+ * For more information on what each of these options do,
+ * run `process-toolkit-schema.ts --usage` or refer to the
+ * documentation for the tool in the `README.md` file.
+ */
+export type ProcessSchemaOption = (
+      '-v' | '-V' | '--verify-toolkit-schema'     | '--skip-schema-verification'
+    | '-e' | '-E' | '--update-package-exports'    | '--skip-package-exports'
+    | '-i' | '-I' | '--update-issue-templates'    | '--skip-issue-templates'
+    | '-r' | '-R' | '--update-readme-files'       | '--skip-readme-files'
+    | '-d' | '-D' | '--update-dependency-imports' | '--skip-dependency-imports'
+);
 
 /**
  * An interface representing the *TypeScript Toolkit Schema*
@@ -762,6 +779,27 @@ export function updateToolkitSchema (
     }
 
 }
+/**
+ * Generate or modify various project files based
+ * on the TypeScript Toolkit Schema (toolkit/schema.json).
+ * 
+ * This function simply uses the Node {@link spawnSync `spawnSync()`}
+ * function to run the `process-toolkit-schema.ts` automation tool
+ * and return the results.
+ * 
+ * @param args  {@link ProcessSchemaOption Command-line options} to be passed
+ *              to the `process-toolkit-schema.ts` tool.
+ * 
+ * @returns     `true` on success or `false` or failure.
+ */
+export const processSchema = ( ...args: ProcessSchemaOption[] ): boolean => (
+    console.log("Processing the Toolkit Schema...\n"),
+    spawnSync(
+        'node',
+        ['--experimental-transform-types', 'process-toolkit-schema.ts', ...args],
+        { shell: true, stdio: 'inherit' }
+    ).status === 0
+);
 
 /**
  * Retrieve the {@link PackageConfig} from the
