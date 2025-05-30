@@ -326,6 +326,79 @@ export const indentOutput = ( output: string ): string => output.replaceAll(/^/g
  */
 export const prettyPath = ( path: string ): string => `/${Path.posix.relative("../", Path.posix.resolve(path))}`;
 
+/**
+ * Switch the terminal to an
+ * [Alternate Screen Buffer](https://learn.microsoft.com/en-us/windows/console/console-virtual-terminal-sequences#alternate-screen-buffer),
+ * providing a clean screen to manipulate without affecting
+ * the contents of the *Main Buffer*.
+ * 
+ * To switch back to the *Main Buffer*, use {@link switchToMainBuffer `switchToMainBuffer()`}.
+ * 
+ * If this function is called multiple times in succession without calling
+ * {@link switchToMainBuffer `switchToMainBuffer()`}, a new *Alternate Screen Buffer*
+ * will be created each time, though, the contents of the previous Alternate Screen Buffer
+ * will be **irrecoverably lost**.
+ * 
+ * @returns     A promise that is fulfilled once the terminal has been
+ *              successfully switched to an Alternate Screen Buffer.
+ * 
+ * @throws      Rejects with an {@link Error} if an error occurred while
+ *              attempting to switch the terminal to an Alternate Screen Buffer.
+ * 
+ * @see {@link switchToMainBuffer `switchToMainBuffer()`}
+ */
+export const switchToAltBuffer = () => new Promise<void>((resolve, reject) => {
+    
+    const result = process.stdout.write("\x1b[?1049h", (error) => {
+
+        if (!error && result)
+            resolve();
+        else
+            reject(error);
+
+    });
+
+    if (!result)
+        process.stdout.once('drain', resolve);
+
+});
+/**
+ * Switch the terminal back to the
+ * [Main Screen Buffer](https://learn.microsoft.com/en-us/windows/console/console-virtual-terminal-sequences#alternate-screen-buffer),
+ * restoring the original contents of the terminal before the
+ * original call to {@link switchToAltBuffer `switchToAltBuffer()`}.
+ * 
+ * Note that the contents of the *Alternate Screen Buffer*
+ * created using {@link switchToAltBuffer `switchToAltBuffer()`}
+ * will be **irrecoverably lost**.
+ * 
+ * If called when the Main Screen Buffer is already being used in the terminal,
+ * this function has no effect. 
+ * 
+ * @returns     A promise that is fulfilled once the terminal has been
+ *              successfully switched back to the Main Screen Buffer.
+ * 
+ * @throws      Rejects with an {@link Error} if an error occurred while
+ *              attempting to switch the terminal to the Main Screen Buffer.
+ * 
+ * @see {@link switchToMainBuffer `switchToMainBuffer()`}
+ */
+export const switchToMainBuffer = () => new Promise<void>((resolve, reject) => {
+    
+    const result = process.stdout.write("\x1b[?1049l", (error) => {
+
+        if (!error && result)
+            resolve();
+        else
+            reject(error);
+
+    });
+
+    if (!result)
+        process.stdout.once('drain', resolve);
+
+});
+
 
 // Serialization and File Management
 
