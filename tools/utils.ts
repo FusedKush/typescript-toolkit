@@ -292,91 +292,7 @@ var tempDirs: Record<string, string> = {};
 
 
 /* Exported Functions */
-// Toolkit Schema Management
-
-/**
- * Retrieve the {@link ToolkitSchema} from the
- * TypeScript Toolkit Schema (`/toolkit/schema.json`).
- * 
- * Any keys starting with a `$` character in the
- * Toolkit Schema object will be automatically omitted
- * from the returned object.
- * 
- * @returns     The {@link Parsed Toolkit Schema}.
- * 
- * @throws      An {@link Error} if the Toolkit Schema could
- *              not be successfully retrieved or parsed.
- * 
- * @see         {@link updateToolkitSchema `updateToolkitSchema()`}
- */
-export function fetchToolkitSchema (): ToolkitSchema {
-
-    try {
-        let schema = readJsonFile(`${TOOLKIT_PATH}/schema.json`);
-        let keys = Object.keys(schema);
-        
-        // Remove any property with a key that starts with a `$` character.
-        keys.forEach((key) => {
-
-            if (key.startsWith('$'))
-                delete schema[key];
-
-        });
-
-        return schema;
-    }
-    catch (error) {
-        throw new Error(
-            `Failed to retrieve the TypeScript Toolkit Schema: ${(error as Error).message}`,
-            { cause: error }
-        );
-    }
-
-}
-/**
- * Update the TypeScript Toolkit Schema to reflect
- * the specified {@link ToolkitSchema} object.
- * 
- * @param schema            The {@link ToolkitSchema} representing the
- *                          Modified Toolkit Schema.
- * 
- * @param dryRun            Indicates whether or not to print to the console
- *                          what changes would have been made to the various
- *                          files instead of actually making them.
- * 
- * @param tempDirPrefix     The {@link WriteFileOptions.tempDirPrefix Temporary Directory Prefix}
- *                          for {@link writeFile `writeFile()`} to use.
- * 
- * @throws                  An {@link Error} if the Toolkit Schema could
- *                          not be successfully updated.
- * 
- * @see                     {@link fetchToolkitSchema `fetchToolkitSchema()`}
- * @see                     {@link stringifyJson `stringifyJson()`}
- * @see                     {@link writeFile `writeFile()`}
- */
-export function updateToolkitSchema (
-    schema: ToolkitSchema,
-    dryRun: boolean = false,
-    tempDirPrefix?: string
-): void {
-
-    try {
-        writeFile(`${TOOLKIT_PATH}/schema.json`, stringifyJson(schema), { dryRun, tempDirPrefix: tempDirPrefix });
-    
-        if (!dryRun)
-            console.log("Successfully updated the TypeScript Toolkit Schema.");
-    }
-    catch (error) {
-        throw new Error(
-            `Failed to update the TypeScript Toolkit Schema: ${(error as Error).message}`,
-            { cause: error }
-        );
-    }
-
-}
-
-
-// Program Output Formatting
+// Console & Program Output Formatting
 
 /**
  * Indent every line of the designated `output`.
@@ -580,6 +496,94 @@ export const readJsonFile = <T extends Record<string, any>> ( filePath: string )
  * @see         {@link readJsonFile `readJsonFile()`}
  */
 export const stringifyJson = ( data: Record<string, any> ): string => `${JSON.stringify(data, null, 2)}\n`;
+
+
+// Toolkit Schema & NPM Package Configuration
+
+/**
+ * Retrieve the {@link ToolkitSchema} from the
+ * TypeScript Toolkit Schema (`/toolkit/schema.json`).
+ * 
+ * Any keys starting with a `$` character in the
+ * Toolkit Schema object will be automatically omitted
+ * from the returned object.
+ * 
+ * @returns     The {@link ToolkitSchema Parsed Toolkit Schema}.
+ * 
+ * @throws      An {@link Error} if the Toolkit Schema could
+ *              not be successfully retrieved or parsed.
+ * 
+ * @see         {@link updateToolkitSchema `updateToolkitSchema()`}
+ * @see         {@link fetchPackageConfig `fetchPackageConfig()`}
+ * @see         {@link readJsonFile `readJsonFile()`}
+ */
+export function fetchToolkitSchema (): ToolkitSchema {
+
+    try {
+        let schema = readJsonFile(TOOLKIT_SCHEMA_PATH);
+        let keys = Object.keys(schema);
+        
+        // Remove any property with a key that starts with a `$` character.
+        keys.forEach((key) => {
+
+            if (key.startsWith('$'))
+                delete schema[key];
+
+        });
+
+        return schema;
+    }
+    catch (error) {
+        throw new Error(
+            `Failed to retrieve the TypeScript Toolkit Schema: ${(error as Error).message}`,
+            { cause: error }
+        );
+    }
+
+}
+/**
+ * Update the TypeScript Toolkit Schema (`/toolkit/schema.json`)
+ * to reflect the specified {@link ToolkitSchema} object.
+ * 
+ * @param schema            The {@link ToolkitSchema} representing the
+ *                          Modified Toolkit Schema.
+ * 
+ * @param dryRun            Indicates whether or not to print to the console
+ *                          what changes would have been made to the schema
+ *                          file instead of actually making them.
+ * 
+ * @param tempDirPrefix     The {@link WriteFileOptions.tempDirPrefix Temporary Directory Prefix}
+ *                          for {@link writeFile `writeFile()`} to use.
+ * 
+ * @throws                  An {@link Error} if the Toolkit Schema could
+ *                          not be successfully updated.
+ * 
+ * @see                     {@link fetchToolkitSchema `fetchToolkitSchema()`}
+ * @see                     {@link updatePackageConfig `updatePackageConfig()`}
+ * @see                     {@link stringifyJson `stringifyJson()`}
+ * @see                     {@link writeFile `writeFile()`}
+ */
+export function updateToolkitSchema (
+    schema: ToolkitSchema,
+    dryRun: boolean = false,
+    tempDirPrefix?: string
+): void {
+
+    try {
+        writeFile(TOOLKIT_SCHEMA_PATH, stringifyJson(schema), { dryRun, tempDirPrefix });
+    
+        if (!dryRun)
+            console.log("Successfully updated the TypeScript Toolkit Schema.");
+    }
+    catch (error) {
+        throw new Error(
+            `Failed to update the TypeScript Toolkit Schema: ${(error as Error).message}`,
+            { cause: error }
+        );
+    }
+
+}
+
 /**
  * Retrieve the {@link PackageConfig} from the
  * NPM Package Configuration (`/package.json`).
@@ -669,6 +673,11 @@ export const TOOLKIT_PATH = `${ROOT_PATH}/toolkit`;
  * The path to the NPM Package Configuration (`/package.json`).
  */
 export const PACKAGE_CONFIG_PATH = `${ROOT_PATH}/package.json`;
+/**
+ * The path to the TypeScript Toolkit Schema (`/toolkit/schema.json`).
+ */
+export const TOOLKIT_SCHEMA_PATH = `${TOOLKIT_PATH}/schema.json`;
+
 /**
  * A [semver-compatible version `string`](https://semver.org/)
  * representing the current version of the NPM Package
