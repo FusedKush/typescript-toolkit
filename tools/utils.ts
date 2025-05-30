@@ -7,9 +7,12 @@ declare module "./utils.ts";
 
 import {
     copyFileSync,
+    cpSync,
+    Dirent,
     existsSync,
     mkdirSync,
     mkdtempSync,
+    readdirSync,
     readFileSync,
     rmdirSync,
     rmSync,
@@ -272,6 +275,17 @@ export interface WriteFileOptions {
      * to the end of the directory name.
      */
     tempDirPrefix?: string;
+    /**
+     * Specifies the path to the actual file
+     * that will eventually be modified by the script.
+     * 
+     * This option is currently only used to display
+     * an alternative path when {@link dryRun} is `true`,
+     * which is useful when previewing changes to template
+     * files but still want to display the expected path
+     * of the file instead of that of the template file.
+     */
+    trueFilepath?: string;
 
 }
 
@@ -310,7 +324,7 @@ export const indentOutput = ( output: string ): string => output.replaceAll(/^/g
  * 
  * @returns     The pretty `path`.
  */
-export const prettyPath = ( path: string ): string => Path.relative("../", Path.resolve(path));
+export const prettyPath = ( path: string ): string => `/${Path.posix.relative("../", Path.posix.resolve(path))}`;
 
 
 // Serialization and File Management
@@ -319,11 +333,15 @@ export const prettyPath = ( path: string ): string => Path.relative("../", Path.
  * A helper function to synchronously get the contents
  * of a file as a UTF-8-Encoded `string`.
  * 
+ * This function is a wrapper around the Node {@link readFileSync `readFileSync()`} function
+ * with the `encoding` option set to `UTF-8`.
+ * 
  * @param filepath  The path to the file being read.
  * 
  * @returns         A `string` containing the contents of the file.
  * 
  * @see             {@link writeFile `writeFile()`}
+ * @see             {@link readFileSync `readFileSync()`}
  */
 export const readFile = ( filepath: string ): string => readFileSync(filepath, { encoding: 'utf-8' });
 
@@ -331,28 +349,30 @@ export const readFile = ( filepath: string ): string => readFileSync(filepath, {
  * A helper function to synchronously write the
  * provided `contents` to the file specified by the `filepath`.
  * 
- * The specified `contents` will first be written to a temporary
- * file before copying and overriding the file specified
- * `filepath` with the contents of the temporary file.
+ * This function is a wrapper around the Node {@link writeFileSync `writeFileSync()`} function
+ * in which the specified `contents` will first be written to a temporary file before
+ * copying and overriding the file specified `filepath` with the contents of the temporary file.
  * 
  * @param filepath  The path to the file being written to.
  * 
  * @param contents  The contents to be written to the specified file.
  * 
- * @param options   An {@link WriteFileOptions object}
- *                  containing the options to use when writing the file.
+ * @param options   The {@link WriteFileOptions options} to use when writing the file.
  * 
  * @throws          An {@link Error} if the designated file was not
  *                  successfully updated with the specified `contents`.
+ * 
+ * @see             {@link copyDirectory `copyDirectory()`}
+ * @see             {@link writeFileSync `writeFileSync()`}
  */
 export function writeFile ( filepath: string, contents: string, options?: WriteFileOptions ): void;
 /**
  * A helper function to synchronously write the
  * provided `contents` to the file specified by the `filepath`.
  * 
- * The specified `contents` will first be written to a temporary
- * file before copying and overriding the file specified
- * `filepath` with the contents of the temporary file.
+ * This function is a wrapper around the Node {@link writeFileSync `writeFileSync()`} function
+ * in which the specified `contents` will first be written to a temporary file before
+ * copying and overriding the file specified `filepath` with the contents of the temporary file.
  * 
  * @param filepath          The path to the file being written to.
  * 
@@ -362,7 +382,7 @@ export function writeFile ( filepath: string, contents: string, options?: WriteF
  *                          what changes would have been made to the
  *                          file instead of actually making them.
  * 
- * @param tempDirSuffix     The prefix of the randomly-generated temporary directory.
+ * @param tempDirPrefix     The prefix of the randomly-generated temporary directory.
  *                          
  *                          When specified, the temporary directory will
  *                          have a path of the following format:
@@ -378,20 +398,34 @@ export function writeFile ( filepath: string, contents: string, options?: WriteF
  *                          and `$RANDOM` corresponds to the randomly-generated characters appended
  *                          to the end of the directory name.
  * 
+ * @param trueFilepath      Specifies the path to the actual file
+ *                          that will eventually be modified by the script.
+ *                          
+ *                          This option is currently only used to display
+ *                          an alternative path when `dryRun` is `true`,
+ *                          which is useful when previewing changes to template
+ *                          files but still want to display the expected path
+ *                          of the file instead of that of the template file.
+ * 
  * @throws                  An {@link Error} if the designated file was not
  *                          successfully updated with the specified `contents`.
+ * 
+ * @see                     {@link copyDirectory `copyDirectory()`}
+ * @see                     {@link writeFileSync `writeFileSync()`}
  */
 export function writeFile (
     filepath: string,
     contents: string,
     dryRun?: boolean,
-    tempDirSuffix?: string
+    tempDirPrefix?: string,
+    trueFilepath?: string
 ): void;
 export function writeFile (
     filepath: string,
     contents: string,
     optionsOrDryRun?: WriteFileOptions | boolean,
-    tempDirSuffix?: string
+    tempDirSuffix?: string,
+    trueFilepath?: string
 ): void {
 
     /** Options to use when writing the file. */
@@ -399,7 +433,8 @@ export function writeFile (
 
         let options: Required<WriteFileOptions> = {
             dryRun: false,
-            tempDirPrefix: ''
+            tempDirPrefix: '',
+            trueFilepath: filepath
         };
 
         if (typeof optionsOrDryRun == 'object') {
@@ -410,6 +445,8 @@ export function writeFile (
                 options.dryRun = optionsOrDryRun;
             if (typeof tempDirSuffix == 'string')
                 options.tempDirPrefix = tempDirSuffix;
+            if (typeof trueFilepath == 'string')
+                options.trueFilepath = trueFilepath;
         }
 
         return options;
@@ -442,8 +479,6 @@ export function writeFile (
         return tempDirs[options.tempDirPrefix];
 
     })();
-    /** The {@link prettyPath pretty} `filePath`. */
-    let prettyFilePath = prettyPath(filepath);
 
     if (!options.dryRun) {
         try {
@@ -454,18 +489,77 @@ export function writeFile (
             writeFileSync(tempfileName, contents, { encoding: 'utf-8' });
             copyFileSync(tempfileName, filepath);
             rmSync(tempfileName);
-            console.log(`Successfully updated file ${prettyFilePath}.`);
+            console.log(`Successfully updated file ${prettyPath(filepath)}.`);
         }
         catch (error) {
             throw new Error(
-                `Failed to commit changes to file ${prettyFilePath}: ${(error as Error).message}`,
+                `Failed to commit changes to file ${prettyPath(filepath)}: ${(error as Error).message}`,
                 { cause: error }
             );
         }
     }
     else {
-        console.log(`\nChanges to be made to file ${prettyFilePath}:`);
+        console.log(`\nChanges to be made to file ${prettyPath(options.trueFilepath)}:`);
         console.log(indentOutput(contents));
+        console.log();
+    }
+
+}
+
+/**
+ * A helper function to synchronously copy the contents
+ * of the directory specified by `srcPath` to `destPath`.
+ * 
+ * This function is a wrapper around the Node {@link cpSync `cpSync()`} function
+ * with the {@link CopySyncOptions.recursive `recursive`} option set to `true` by default.
+ *  
+ * @param srcPath       The path to the directory being *copied*.
+ *  
+ * @param destPath      The path to the destination the directory is to be *copied to*.
+ *  
+ * @param dryRun        Indicates whether or not to print to the console
+ *                      what files would have been copied instead of actually copying them.
+ * 
+ * @see                 {@link writeFile `writeFile()`}
+ * @see                 {@link cpSync `cpSync()`}
+ */
+export function copyDirectory ( srcPath: string, destPath: string, dryRun: boolean = false ): void {
+
+    if (!dryRun) {
+        try {
+            let copiedFileCount: number = 0;
+
+            cpSync(srcPath, destPath, {
+                recursive: true,
+                filter: () => (copiedFileCount++, true)
+            });
+
+            if (copiedFileCount > 0)
+                console.log(`Successfully copied ${copiedFileCount} file${copiedFileCount != 1 ? 's' : ''} from ${srcPath} to ${destPath}.`);
+        }
+        catch (error) {
+            throw new Error(
+                `Failed to copy files from ${srcPath} to ${destPath}: ${(error as Error).message}`,
+                { cause: error }
+            );
+        }
+    }
+    else {
+        const printFilePath = ( file: Dirent<string> ) => {
+
+            const filepath = `${file.parentPath.replace(srcPath, destPath)}/${file.name}`;
+
+            console.log(`\t[+] ${prettyPath(filepath)}${file.isDirectory() ? '/' : ''}`);
+
+            if (file.isDirectory())
+                readdirSync(filepath, { withFileTypes: true }).forEach(printFilePath);
+
+        };
+
+        console.log(`\nFiles to be added to ${prettyPath(Path.dirname(destPath))}/:`);
+        console.log(`\t[+] ${prettyPath(destPath)}`);
+        readdirSync(srcPath, { withFileTypes: true } ).forEach(printFilePath);
+        console.log();
     }
 
 }
@@ -474,9 +568,12 @@ export function writeFile (
  * A helper function to synchronously retrieve 
  * and parse the contents of a `JSON` File.
  * 
+ * This function is a wrapper around the {@link JSON.parse `JSON.parse()`} function
+ * that simply passes in the contents of the file returned by the {@link readFile `readFile()`} function.
+ * 
  * @template T      The type of the parsed data returned by the function.
  * 
- * @param filePath  The path to the `JSON` File being read.
+ * @param filepath  The path to the `JSON` File being read.
  * 
  * @returns         The parsed contents of the specified `JSON` File.
  * 
@@ -484,16 +581,21 @@ export function writeFile (
  *                  does not form a valid JSON `string`.
  * 
  * @see             {@link stringifyJson `stringifyJson()`}
+ * @see             {@link JSON.parse `JSON.parse()`}
  */
-export const readJsonFile = <T extends Record<string, any>> ( filePath: string ): T => JSON.parse(readFile(filePath));
+export const readJsonFile = <T extends Record<string, any>> ( filepath: string ): T => JSON.parse(readFile(filepath));
 /**
  * A helper function to `string`-ify the designated JSON `data`.
+ * 
+ * This function is a wrapper around the {@link JSON.stringify `JSON.stringify()`} function
+ * with the `space` argument set to `2` spaces that is terminated by a newline character.
  * 
  * @param data  The `JSON` data being `string`-ified.
  * 
  * @returns     A valid JSON `string` terminated by a newline (`/n`).
  * 
  * @see         {@link readJsonFile `readJsonFile()`}
+ * @see         {@link JSON.stringify `JSON.stringify()`}
  */
 export const stringifyJson = ( data: Record<string, any> ): string => `${JSON.stringify(data, null, 2)}\n`;
 
@@ -661,7 +763,7 @@ export function updatePackageConfig (
  * 
  * @see {@link TOOLKIT_PATH}
  */
-export const ROOT_PATH = "../";
+export const ROOT_PATH = "..";
 /**
  * The path to the `/toolkit` Directory containing
  * the main TypeScript Toolkit Codebase.
