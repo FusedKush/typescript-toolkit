@@ -83,6 +83,7 @@ import Readline from "node:readline/promises";
      */
     const promptForName = async () => {
         
+        await switchToAltBuffer();
         console.log("Please enter the name of the new namespace");
         console.log();
 
@@ -95,7 +96,7 @@ import Readline from "node:readline/promises";
                 namespaceName = response;    
         } while (!namespaceName || !isValidNamespace(namespaceName));
         
-        console.log();
+        await switchToMainBuffer();
 
     };
     /**
@@ -108,6 +109,7 @@ import Readline from "node:readline/promises";
      */
     const promptForDescription = async () => {
 
+        await switchToAltBuffer();
         console.log("Do you want to add a description for the new namespace?");
         console.log();
         console.log("Enter the namespace description or press enter to continue.");
@@ -118,7 +120,7 @@ import Readline from "node:readline/promises";
         if (response && response.trim().length > 0)
             namespaceDetails.description = response;
 
-        console.log();
+        await switchToMainBuffer();
 
     };
     /**
@@ -131,6 +133,7 @@ import Readline from "node:readline/promises";
      */
     const promptForMarkdownDescription = async () => {
 
+        await switchToAltBuffer();
         console.log("Do you want to add a markdown description for the new namespace?");
         console.log();
         console.log("Enter the namespace markdown description or press enter to continue.");
@@ -141,6 +144,9 @@ import Readline from "node:readline/promises";
         if (response && response.trim().length > 0)
             namespaceDetails.markdownDescription = response;
 
+        await switchToMainBuffer();
+
+    };
         console.log();
 
     };
@@ -230,7 +236,7 @@ import Readline from "node:readline/promises";
                 /** The user's response to the confirmation prompt. */
                 let response: string = "";
 
-                console.log();
+                await switchToAltBuffer();
                 console.log("Does everything look right?");
                 console.log({
                     name: namespaceName,
@@ -242,7 +248,7 @@ import Readline from "node:readline/promises";
                 while ( !['yes', 'y', 'no', 'n'].includes(response) )
                     response = (await rl.question("(Y)es/(N)o: ")).toLowerCase();
 
-                console.log();
+                await switchToMainBuffer();
         
                 // Once confirmed, we can simply exit the confirmation loop.
                 if (response.startsWith('y')) {

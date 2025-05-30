@@ -20,7 +20,8 @@ import {
     fetchToolkitSchema,
     ROOT_PATH,
     TOOLKIT_PATH,
-    writeFile
+    writeFile,
+    fetchPackageConfig
 } from "./utils.ts";
 
 import { existsSync, readdirSync } from "node:fs";
@@ -665,7 +666,7 @@ const updatePackageExports: ScriptActionFunction = (schema) => {
     const getDistFilePath = ( ...segments: string[] ) => `./dist/${segments.join('/')}/index.js` as const;
 
     try {
-        let packageConfig: PackageConfig = readJsonFile(PACKAGE_JSON_PATH);
+        let packageConfig: PackageConfig = fetchPackageConfig();
             packageConfig.exports = { ".": "./dist/index.js" };
 
         for (const namespace in schema) {
