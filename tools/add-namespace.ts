@@ -423,6 +423,18 @@ function createNamespaceFiles (
         
         // Update the Toolkit Schema to add the new Namespace.
         schema[namespaceName!] = namespaceDetails;
+        schema = (() => {
+
+            let newObj = {};
+
+            Object.keys(schema).sort().forEach(
+                (key) => (newObj[key] = schema[key])
+            );
+
+            return newObj;
+
+        })();
+
         updateToolkitSchema(schema, dryRun, 'add-namespace');
 
         // Add and update the boilerplate files for the new namespace.
