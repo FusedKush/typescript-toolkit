@@ -588,10 +588,7 @@ const verifySchema: ScriptActionFunction = (schema, dryRun) => {
             }
         }
 
-        if (!dryRun)
-            console.log("[+] Toolkit Schema Validated.");
-        else
-            console.log("Successfully Validated the Toolkit Schema!");
+        console.log(`Successfully Validated the Toolkit Schema${!dryRun ? '.' : '!'}`);
     }
     catch (error) {
         if (error instanceof SchemaValidationError) {
@@ -1381,7 +1378,7 @@ const updateDependencyImports: ScriptActionFunction = (schema) => {
          *              *skip* one of the {@link ScriptActionFunction Script Actions}
          *              or `false` if it is not.
          */
-        const isSkipArg = ( arg: string ): boolean => /(?:\-[a-z])|(?:\-{2}skip-)/.test(arg);
+        const isSkipArg = ( arg: string ): boolean => /(?:\-[A-Z])|(?:\-{2}skip-)/.test(arg);
         /**
          * Process the specified command-line argument.
          * 
@@ -1440,10 +1437,10 @@ const updateDependencyImports: ScriptActionFunction = (schema) => {
                 if (!processedDeterminantArg && lcArg != '--dry-run') {
                     processedDeterminantArg = true;
 
-                    // If the Determinant Argument is a *Skip Argument*,
+                    // If the Determinant Argument is not a *Skip Argument*,
                     // `options` needs to start with all actions set
                     // to `false` by default.
-                    if (isSkipArg(arg)) {
+                    if (!isSkipArg(arg)) {
                         options.verifySchema = false;
                         options.updatePackageExports = false;
                         options.updateIssueTemplates = false;
